@@ -17,11 +17,11 @@ import com.bigpigs.CONSTANT;
 import com.bigpigs.R;
 import com.bigpigs.main.DetailActivity;
 import com.bigpigs.model.SystemPitch;
+import com.bigpigs.model.UserModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 public class SystemPitchAdapter extends RecyclerView.Adapter<SystemPitchAdapter.MyViewHolder>
                                     implements Filterable
 {
@@ -29,15 +29,16 @@ public class SystemPitchAdapter extends RecyclerView.Adapter<SystemPitchAdapter.
     private Context context;
     private String TAG=SystemPitchAdapter.class.getName();
     private ArrayList<SystemPitch> data;
-
+    private UserModel userModel;
     private LayoutInflater inflater;
     private ArrayList<SystemPitch> results;
     private ArrayList<SystemPitch> list;
 
 
-    public SystemPitchAdapter(Context context, ArrayList<SystemPitch> data) {
+    public SystemPitchAdapter(Context context, ArrayList<SystemPitch> data,UserModel u) {
         this.context = context;
         this.data = data;
+        this.userModel = u;
         this.inflater = LayoutInflater.from(context);
         setHasStableIds(true);
     }
@@ -68,6 +69,7 @@ public class SystemPitchAdapter extends RecyclerView.Adapter<SystemPitchAdapter.
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra(CONSTANT.SystemPitch_MODEL,data.get(position));
+                intent.putExtra(CONSTANT.KEY_USER,userModel);
                 context.startActivity(intent);
             }
         });

@@ -1,9 +1,10 @@
 package com.bigpigs.main;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -23,12 +24,12 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.bigpigs.API;
+import com.bigpigs.CONSTANT;
 import com.bigpigs.R;
 import com.bigpigs.model.UserModel;
+import com.bigpigs.support.NetworkUtils;
 import com.bigpigs.support.Utils;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -36,15 +37,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
@@ -53,17 +56,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText edt_email, edt_password;
     private SharedPreferences sharedPreferences;
     private LoginButton loginFB;
+    private String firebaseToken;
     private Dialog dialog;
     private CallbackManager callbackManager;
     private String email, password;
     private SignInButton loginGG;
+    private UserModel userModel;
+    private OkHttpClient okHttpClient;
     private GoogleApiClient mGoogleApiClient;
     private int RC_SIGN_IN = 9999;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,55 +77,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-
+        okHttpClient = new OkHttpClient();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
+        userModel = new UserModel();
 
-//        try {
-//            PackageInfo info = null;
-//            try {
-//                info = getPackageManager().getPackageInfo(
-//                        "com.bigpigs",
-//                        PackageManager.GET_SIGNATURES);
-//            } catch (PackageManager.NameNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            for (android.content.pm.Signature signature : info.signatures) {
-//                MessageDigest md = MessageDigest.getInstance("SHA");
-//                md.update(signature.toByteArray());
-//                Log.d("KeyHash.", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-//            }
-//        } catch (NoSuchAlgorithmException e) {
-//
-//        }
+
 
         initGoogleAPI();
         initView();
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
-
-
         sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         if (sharedPreferences != null)
         {
-            if(!sharedPreferences.getString("email","null").equals("null")
-                    &&!sharedPreferences.getString("password","null").equals("null") )
-            {
-                flash();
-            }
-            else
-            {
-
-            }
-
+         flash();
+        }
+        else
+        {
+            Log.d(TAG,"shared null");
         }
 //        moveToHomeScreen();
     }
 
     private void login() {
     }
-
     public void initGoogleAPI() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -151,6 +132,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tv_signUp.setOnClickListener(this);
         tv_forgot.setOnClickListener(this);
         tv_trial.setOnClickListener(this);
+
+        edt_email.setText("owner@gmail.com");
+        edt_password.setText("vanduong");
+
+
+        Log.d("FCM", FirebaseInstanceId.getInstance().getToken()+" ");
         loginFB.setReadPermissions(Arrays.asList("public_profile,email,user_birthday"));
         loginFB.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -190,12 +177,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onStop() {
-        super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
-// See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.disconnect();
+        super.onStop();
     }
 
     private Bundle getFacebookData(JSONObject object) {
@@ -241,19 +223,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         String email = sharedPreferences.getString("email", "null");
         String password = sharedPreferences.getString("password", "null");
-
-        if (email.equals("null") && password.equals("null")) {
-            edt_email.setText("");
-            edt_password.setText("");
-        } else {
+        Log.d(TAG,email+" - "+password);
+        if (email.equals("null") || password.equals("null")) {
+            edt_email.setText("owner@gmail.com");
+            edt_password.setText("vanduong");
+        }
+        else {
             edt_email.setText(email);
             edt_password.setText(password);
-            Log.d("email/password", email + "/" + password);
-//            dialog = new MaterialDialog.Builder(this)
-//                    .content("Đang đăng nhập....")
-//                    .progress(true, 0)
-//                    .show();
-            moveToHomeScreen();
+            HashMap<String,String> body = new HashMap<>();
+            body.put("email",email);
+            body.put("password",password);
+            new Login(body).execute();
 
         }
 
@@ -266,6 +247,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         editor.putString("email", email);
         editor.putString("password", password);
         editor.putString("userType", userType);
+        editor.putBoolean("login",true);
         Log.d("info", email + "/" + password + "/" + userType);
         editor.commit();
 
@@ -292,30 +274,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    private void loginGoogle() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-
-    }
-
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                    }
-                });
-    }
-
-    private void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-
-                    }
-                });
-    }
 
     @Override
     public void onClick(View v) {
@@ -326,37 +284,132 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             }
             case R.id.loginGG: {
-                loginGoogle();
+//                loginGoogle();
                 break;
             }
             case R.id.btn_login: {
-                moveToHomeScreen();
-                finish();
-//                if (!validate(edt_email.getText().toString(),edt_password.getText().toString())) {
-//                        onLoginFailed();
-//                        break;
-//                }
-//                else {
-//
-//                    dialog = new MaterialDialog.Builder(this)
-//                            .content("Đang đăng nhập....")
-//                            .progress(true, 0)
-//                            .show();
-//                    break;
-//                }
+
+                if (!validate(edt_email.getText().toString(),edt_password.getText().toString())) {
+                        Utils.openDialog(LoginActivity.this,"Điền đầy đủ vào thông tin đăng nhập");
+                        break;
+                }
+                else
+                {
+
+                    HashMap<String, String> body = new HashMap<>();
+                    body.put("email", edt_email.getText().toString());
+                    body.put("password", edt_password.getText().toString());
+                    new Login(body).execute();
+                    break;
+                }
             }
             case R.id.link_forgot: {
                 startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
                 break;
             }
             case R.id.link_trial: {
-                moveToHomeScreen();
+
+                userModel.setPhone("098878xxx");
+                userModel.setId("id");
+                userModel.setName("Trial");
+                userModel.setEmail("Traial");
+                userModel.setUserType(UserModel.TYPE_TEAM);
+                userModel.setImageURL("img");
+                userModel.setToken("token");
+                // lưu dữ liệu đăng nhập vào máy
+//                saveUserData(userModel.getEmail(),userModel.getPassword(),userModel.getUserType());
+                //gửi dữ liệu user sang main activity
+                getSharedPreferences("data",MODE_PRIVATE).edit().putBoolean("login",false);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra(CONSTANT.KEY_USER, userModel);
+                intent.putExtra(CONSTANT.KEY_USER,userModel);
+                startActivity(intent);
             }
         }
     }
 
+    class Login extends AsyncTask<String,String,String>
+    {
+
+
+        HashMap<String,String> param;
+        ProgressDialog progressDialog;
+
+        public Login(HashMap<String,String> body)
+        {
+            this.param=body;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(LoginActivity.this);
+            progressDialog.setMessage("Đang thao tác");
+            progressDialog.show();
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                Response response =
+                        okHttpClient.newCall(NetworkUtils.createPostRequest(API.Login, this.param)).execute();
+                String results = response.body().string();
+                Log.d(TAG,results);
+                if(results.contains("success"))
+                    return results;
+                if(results.contains("fail"))
+                    return "fail";
+            }
+            catch (Exception e)
+            {
+                Log.d(TAG,"exception here");
+                return "failed";
+            }
+            return "failed";
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(s.contains("success")) {
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    JSONObject result = data.getJSONObject(0);
+                    userModel.setPhone(result.getString("phone"));
+                    userModel.setId(result.getString("id"));
+                    userModel.setName(result.getString("name"));
+                    userModel.setPassword(result.getString("password"));
+                    userModel.setEmail(result.getString("email"));
+                    if(result.getString("type").equals("1"))
+                    userModel.setUserType(UserModel.TYPE_TEAM);
+                    if(result.getString("type").equals("0")) userModel.setUserType(UserModel.TYPE_OWNER);
+                    userModel.setImageURL("img");
+                    userModel.setToken(jsonObject.getString("token"));
+                    // lưu dữ liệu đăng nhập vào máy
+                    saveUserData(userModel.getEmail(),userModel.getPassword(),userModel.getUserType());
+                    //gửi dữ liệu user sang main activity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra(CONSTANT.KEY_USER, userModel);
+                    intent.putExtra(CONSTANT.KEY_USER,userModel);
+                    startActivity(intent);
+                    finish();
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    Utils.openDialog(LoginActivity.this,getString(R.string.login_failed));
+                }
+            }
+            else
+            {
+                Utils.openDialog(LoginActivity.this,getString(R.string.login_failed));
+            }
+            progressDialog.dismiss();
+
+        }
+    }
+
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount acct = result.getSignInAccount();
             Log.d(TAG, "email:" + acct.getEmail());
@@ -370,74 +423,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             bundle.putString("photo", acct.getPhotoUrl().toString());
             bundle.putString("name", acct.getGivenName().toString());
 
+            userModel.setPhone("");
+            userModel.setId("1");
+            userModel.setName(acct.getGivenName().toString());
+            userModel.setEmail(acct.getEmail());
+            userModel.setImageURL("img");
             email = acct.getEmail();
             password = acct.getId();
             saveUserData(email, password, UserModel.TYPE_TEAM);
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("data", bundle);
+            intent.putExtra(CONSTANT.KEY_USER,userModel);
             startActivity(intent);
 
 
-        } else {
+        }
+        else {
 
         }
     }
 
     @Override
     public void onStart() {
-        super.onStart();// ATTENTION: This was auto-generated to implement the App Indexing API.
-// See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-
-
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        } else {
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
-                    handleSignInResult(googleSignInResult);
-                }
-            });
-        }
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        super.onStart();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
-
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Login Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
     }
 }

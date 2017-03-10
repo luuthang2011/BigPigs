@@ -11,10 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bigpigs.R;
-import com.bigpigs.custom.view.RoundedImageView;
 import com.bigpigs.model.NotificationModel;
+import com.bigpigs.view.RoundedImageView;
 
 import java.util.ArrayList;
+
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder>{
 
