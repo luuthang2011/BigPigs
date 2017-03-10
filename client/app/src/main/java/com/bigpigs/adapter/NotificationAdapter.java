@@ -1,0 +1,82 @@
+package com.bigpigs.adapter;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.bigpigs.R;
+import com.bigpigs.custom.view.RoundedImageView;
+import com.bigpigs.model.NotificationModel;
+
+import java.util.ArrayList;
+
+public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder>{
+
+    public static String TAG="FindMacthAdapter";
+    public ArrayList<NotificationModel> list;
+    public Activity context;
+    public ArrayList<NotificationModel> results;
+    private LayoutInflater inflater;
+    public NotificationAdapter(Activity context, ArrayList<NotificationModel> listData) {
+        this.context = context;
+        this.list = listData;
+        this.inflater = LayoutInflater.from(context);
+        setHasStableIds(true);
+        Log.d("list",listData.size()+"");
+
+    }
+
+    @Override
+    public NotificationAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        View view = inflater.inflate(R.layout.item_listview_notification, parent, false);
+        MyViewHolder holder = new MyViewHolder(view);
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(NotificationAdapter.MyViewHolder holder, int position) {
+//        Picasso.with(context).load(R.drawable.ic_manager).resize(100,100).placeholder(R.drawable.ic_avatar).error(R.drawable.ic_avatar).resize(100,100).into(holder.avatar);
+        holder.content.setText(list.get(position).getMessage());
+        holder.time.setText(list.get(position).getDate());
+        if(list.get(position).isRead()==true) holder.wrapper.setBackgroundColor(Color.parseColor("#ffffff"));
+        else holder.wrapper.setBackgroundColor(Color.parseColor("#FFCEFFD0"));
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return list.size();
+    }
+
+    class MyViewHolder extends RecyclerView.ViewHolder {
+        RoundedImageView avatar;
+        TextView content;
+        TextView time;
+        LinearLayout wrapper;
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            avatar = (RoundedImageView) itemView.findViewById(R.id.notification_avatar);
+            content = (TextView) itemView.findViewById(R.id.notification_content);
+            time = (TextView) itemView.findViewById(R.id.notification_date);
+            wrapper = (LinearLayout) itemView.findViewById(R.id.wrapper);
+
+        }
+    }
+
+//            holder = new ViewHolder();
+//            convertView = mLayoutInflater.inflate(R.layout.item_listview_notification,null);
+//            holder.tvNotification = (TextView) convertView.findViewById(R.id.notification_content);
+//            holder.imgAvatar = (RoundedImageView) convertView.findViewById(R.id.notification_avatar);
+//            holder.tvTime = (TextView) convertView.findViewById(R.id.notification_date);
+//            convertView.setTag(holder);
+
+
+
+}
