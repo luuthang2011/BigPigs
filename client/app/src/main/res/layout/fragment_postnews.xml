@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_marginTop="@dimen/s120dp"
+    android:layout_height="fill_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <com.fimo_pitch.custom.view.RoundedImageView
+            android:layout_gravity="center"
+            android:layout_width="@dimen/s120dp"
+            android:background="@mipmap/ic_launcher"
+            android:layout_height="@dimen/s120dp"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:layout_marginTop="@dimen/s30dp"
+            android:orientation="vertical"
+            android:weightSum="1">
+            <!--money-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/s10dp"
+                android:layout_marginLeft="@dimen/s20dp"
+                android:layout_height="wrap_content">
+
+                <com.fimo_pitch.custom.view.RoundedImageView
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="@dimen/s20dp"
+                    android:background="@drawable/ic_note"
+                    android:layout_height="@dimen/s20dp"
+                    />
+
+                <EditText
+                    android:id="@+id/edt_title"
+                    android:hint="Tiêu đề"
+                    style="@style/item_news"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="@dimen/s20dp"
+                android:layout_marginLeft="@dimen/s20dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.03">
+                <com.fimo_pitch.custom.view.RoundedImageView
+                    android:layout_width="@dimen/s20dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/ic_clock"
+                    android:layout_height="@dimen/s20dp"/>
+                <EditText
+                    android:id="@+id/edt_time"
+                    style="@style/item_news"
+                    android:hint="Thời gian diễn ra trận đấu ?"
+                    />
+                />
+            </LinearLayout>
+            <!--location-->
+            <LinearLayout
+                android:layout_marginLeft="@dimen/s20dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/s20dp"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <com.fimo_pitch.custom.view.RoundedImageView
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="@dimen/s20dp"
+                    android:background="@drawable/ic_location"
+                    android:layout_height="@dimen/s20dp"/>
+
+                <EditText
+                    android:id="@+id/edt_location"
+                    android:hint="Khu vực bạn muốn diễn ra "
+                    style="@style/item_news"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginLeft="@dimen/s20dp"
+                android:layout_marginBottom="@dimen/s5dp"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/s20dp"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+                <com.fimo_pitch.custom.view.RoundedImageView
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="@dimen/s20dp"
+                    android:background="@drawable/ic_note"
+                    android:layout_height="@dimen/s20dp"
+                    android:id="@+id/roundedImageView3" />
+
+                <EditText
+                    android:id="@+id/edt_description"
+                    android:hint="Miêu tả về trận đấu này"
+                    style="@style/item_news"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="50dp"
+            android:layout_height="wrap_content">
+            <com.fimo_pitch.custom.view.RoundedImageView
+                android:id="@+id/img_send"
+                android:layout_width="@dimen/s100dp"
+                android:layout_height="@dimen/s100dp"
+                android:background="@drawable/ic_post"
+                android:layout_centerInParent="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="@dimen/s70dp"
+                android:layout_marginEnd="@dimen/s70dp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

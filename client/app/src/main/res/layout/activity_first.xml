@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_first"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bigpigs.main.FirstActivity">
+
+    <ImageView
+        android:id="@+id/ic_laucher"
+        android:layout_width="@dimen/s100dp"
+        android:layout_height="@dimen/s100dp"
+        android:background="@mipmap/ic_launcher"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/s150dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Xin đợi trong giây lát...."
+        android:textSize="@dimen/s20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/s50dp"
+        android:textColor="@color/colorPrimary"
+        android:layout_below="@+id/ic_laucher"
+        android:id="@+id/textView" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar2"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/s30dp" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SKIP"
+        android:id="@+id/bt_skip"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/s200dp" />
+</RelativeLayout>

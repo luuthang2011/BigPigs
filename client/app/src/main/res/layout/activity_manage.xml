@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_manage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.fimo_pitch.main.ManageActivity">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/mng_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            />
+    </android.support.design.widget.AppBarLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/s20dp"
+        >
+    <com.bigpigs.custom.view.RoundedImageView
+        android:id="@+id/user_avatar"
+        android:layout_width="@dimen/s60dp"
+        android:layout_height="@dimen/s60dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/ic_avatar"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/s60dp"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/s20dp"
+        >
+        <TextView
+            android:layout_marginTop="@dimen/s10dp"
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nguyễn Điệp UET"
+            android:textSize="@dimen/s15dp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chỉnh sửa tài khoản"
+            android:layout_marginTop="@dimen/s10dp"
+            android:textSize="@dimen/s15dp"
+            android:layout_alignParentBottom="true"
+            />
+    </LinearLayout>
+        <ImageView
+            android:layout_width="@dimen/s30dp"
+            android:layout_height="@dimen/s30dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/s100dp"
+            android:background="@drawable/ic_next"
+            android:id="@+id/imageView" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/s10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow
+                android:weightSum="2"
+                android:background="@drawable/border"
+                android:gravity="center_horizontal">
+            <LinearLayout
+                android:layout_weight="1"
+                android:background="@drawable/border"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/s10dp"
+                android:paddingBottom="@dimen/s10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Số dư tài khoản"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:text="200.000đ"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:background="@drawable/border"
+                android:paddingTop="@dimen/s10dp"
+                android:paddingBottom="@dimen/s10dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Loại tài khoản"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Chủ sân"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+            </TableRow>
+        </TableLayout>
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_mng"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/s20dp"
+        android:layout_marginTop="@dimen/s20dp"
+        android:layout_gravity="center"
+        android:paddingTop="@dimen/s10dp"
+        android:paddingBottom="@dimen/s10dp"
+        android:paddingRight="@dimen/s70dp"
+        android:paddingLeft="@dimen/s70dp"
+        android:background="@drawable/border"
+        android:text="Đăng xuất"
+        android:id="@+id/textView12" />
+</LinearLayout>
