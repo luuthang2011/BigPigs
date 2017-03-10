@@ -22,7 +22,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -51,32 +50,35 @@ import android.widget.TextView;
 import com.bigpigs.API;
 import com.bigpigs.CONSTANT;
 import com.bigpigs.R;
-import com.bigpigs.custom.view.RoundedImageView;
-import com.bigpigs.fragments.ManageFragment;
-import com.bigpigs.fragments.SystemPitchsFragment;
 import com.bigpigs.fragments.NewsFragment;
 import com.bigpigs.fragments.NotifcationFragment;
+import com.bigpigs.fragments.OwnerFragment;
 import com.bigpigs.fragments.PostNewsFragment;
 import com.bigpigs.fragments.SearchFragment;
 import com.bigpigs.fragments.SettingsFragment;
+import com.bigpigs.fragments.SystemPitchsFragment;
 import com.bigpigs.model.News;
 import com.bigpigs.model.SystemPitch;
 import com.bigpigs.model.UserModel;
+import com.bigpigs.support.NetworkUtils;
 import com.bigpigs.support.TrackGPS;
 import com.bigpigs.support.Utils;
+import com.bigpigs.view.RoundedImageView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 
 /**
@@ -108,31 +110,31 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
     private ArrayList<SystemPitch> listSystem=new ArrayList<>();
     private ArrayList<News> listNews=new ArrayList<>();
     private String listSystemData="",listNewsData="";
+    private String fcmToken ="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
         initView();
         getData();
+        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},permissionCode);
+
+        updateToken();
         initNavMenu();
         initGoogleAPI();
-        ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},permissionCode);
 
+        Log.d("TYPE",userModel.getUserType());
     }
     private void getData() {
         listSystem = new ArrayList<>();
         listNews = new ArrayList<>();
         new MyTask().execute();
 
-        userModel = new UserModel();
+        userModel = (UserModel) getIntent().getSerializableExtra(CONSTANT.KEY_USER);
         data = getIntent().getBundleExtra("data");
-        if (data != null) {
-            userModel.setEmail(data.getString(CONSTANT.USER_EMAIL));
-            userModel.setImageURL(data.getString(CONSTANT.USER_AVATAR));
-            userModel.setName(data.getString(CONSTANT.USER_NAME));
-            tv_email.setText(data.getString(CONSTANT.USER_EMAIL));
-            tv_userName.setText(data.getString(CONSTANT.USER_NAME));
+        if (userModel != null) {
+            tv_email.setText(userModel.getEmail());
+            tv_userName.setText(userModel.getName());
         }
     }
 
@@ -148,6 +150,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
         tv_email = (TextView) navHeader.findViewById(R.id.user_email);
         tv_userName = (TextView) navHeader.findViewById(R.id.user_name);
         userAvatar = (RoundedImageView) navHeader.findViewById(R.id.user_avatar);
+
         Picasso.with(MainActivity.this).load(R.drawable.ic_avatar).fit().centerCrop().into(userAvatar);
 
         ActionBar supportActionBar = getSupportActionBar();
@@ -168,8 +171,19 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
         }
 
     }
-    
-    public void replaceFragment(Fragment fragment,String tag)
+    // update fcm token
+    public void updateToken()
+    {
+        fcmToken = FirebaseInstanceId.getInstance().getToken();
+        if(fcmToken != null)
+        {
+            HashMap<String,String> body = new HashMap<>();
+            body.put("id",userModel.getId());
+            body.put("tokenfcm",fcmToken);
+            new UpdateToken(body).execute();
+        }
+    }
+    public void replaceFragment(Fragment fragment, String tag)
     {
 
         tabs.setVisibility(View.GONE);
@@ -189,64 +203,109 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
     public void initNavMenu()
     {
         if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(
-                    new NavigationView.OnNavigationItemSelectedListener() {
-                        // This method will trigger on item Click of navigation menu
-                        @Override
-                        public boolean onNavigationItemSelected(MenuItem menuItem) {
-//                            ShowToast.showToastLong(MainActivity.this,mSystemPitchArrayList.size()+"");
-                            menuItem.setChecked(true);
-                            navigationView.setCheckedItem(menuItem.getItemId());
+            if(userModel.getUserType().equals(UserModel.TYPE_OWNER)) {
+                navigationView.setNavigationItemSelectedListener(
+                        new NavigationView.OnNavigationItemSelectedListener() {
+                            // This method will trigger on item Click of navigation menu
+                            @Override
+                            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                                menuItem.setChecked(true);
+                                navigationView.setCheckedItem(menuItem.getItemId());
 
-                            switch (menuItem.getItemId()) {
-                                case R.id.menu_home :
-                                {
-                                    frameLayout.setVisibility(View.GONE);
-                                    viewPager.setVisibility(View.VISIBLE);
-                                    tabs.setVisibility(View.VISIBLE);
-                                    mDrawerLayout.closeDrawers();
-                                    break;
-                                }
-                                case R.id.menu_notification :
-                                {
-                                    replaceFragment(NotifcationFragment.newInstance("",""),NotifcationFragment.class.getName());
-                                    mDrawerLayout.closeDrawers();
-                                    break;
-                                }
-                                case R.id.menu_search :
-                                {
-                                    Log.d(TAG,"null");
-                                    mSearchFragment = SearchFragment.newInstance(listSystemData,"");
-                                    replaceFragment(mSearchFragment, mSearchFragment.getClass().getName());
-                                    mDrawerLayout.closeDrawers();
-                                    break;
-                                }
-                                case R.id.menu_manage :
-                                {
-                                    replaceFragment(new ManageFragment().newInstance("",""),ManageFragment.class.getName());
+                                switch (menuItem.getItemId()) {
+                                    case R.id.menu_home: {
+                                        frameLayout.setVisibility(View.GONE);
+                                        viewPager.setVisibility(View.VISIBLE);
+                                        tabs.setVisibility(View.VISIBLE);
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_notification: {
+                                        replaceFragment(NotifcationFragment.newInstance("", ""), NotifcationFragment.class.getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_search: {
+//                                    Log.d(TAG,);
+                                        mSearchFragment = SearchFragment.newInstance(listSystemData, "");
+                                        replaceFragment(mSearchFragment, mSearchFragment.getClass().getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_manage: {
+                                        replaceFragment(new OwnerFragment().newInstance("", ""), OwnerFragment.class.getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_settings: {
+                                        replaceFragment(new SettingsFragment().newInstance("", ""), NotifcationFragment.class.getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_logout: {
+                                        logoutDialog();
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
 
-//                                    Intent intent = new Intent(MainActivity.this,ManageActivity.class);
-//                                    startActivity(intent);
-                                    mDrawerLayout.closeDrawers();
-                                    break;
                                 }
-                                case R.id.menu_settings :
-                                {
-                                    replaceFragment(new SettingsFragment().newInstance("",""),NotifcationFragment.class.getName());
-                                    mDrawerLayout.closeDrawers();
-                                    break;
-                                }
-                                case R.id.menu_logout :
-                                {
-                                    logoutDialog();
-                                    mDrawerLayout.closeDrawers();
-                                    break;
-                                }
-
+                                return true;
                             }
-                            return true;
-                        }
-                    });
+                        });
+            }
+            else
+            {
+                navigationView.getMenu().removeItem(R.id.menu_manage);
+                navigationView.setNavigationItemSelectedListener(
+                        new NavigationView.OnNavigationItemSelectedListener() {
+                            // This method will trigger on item Click of navigation menu
+                            @Override
+                            public boolean onNavigationItemSelected(MenuItem menuItem) {
+//                            ShowToast.showToastLong(MainActivity.this,mSystemPitchArrayList.size()+"");
+                                menuItem.setChecked(true);
+                                navigationView.setCheckedItem(menuItem.getItemId());
+
+                                switch (menuItem.getItemId()) {
+                                    case R.id.menu_home: {
+                                        frameLayout.setVisibility(View.GONE);
+                                        viewPager.setVisibility(View.VISIBLE);
+                                        tabs.setVisibility(View.VISIBLE);
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_notification: {
+                                        replaceFragment(NotifcationFragment.newInstance("", ""), NotifcationFragment.class.getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_search: {
+//                                    Log.d(TAG,);
+                                        mSearchFragment = SearchFragment.newInstance(listSystemData, "");
+                                        replaceFragment(mSearchFragment, mSearchFragment.getClass().getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_manage: {
+                                        replaceFragment(new OwnerFragment().newInstance("", ""), OwnerFragment.class.getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_settings: {
+                                        replaceFragment(new SettingsFragment().newInstance("", ""), NotifcationFragment.class.getName());
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+                                    case R.id.menu_logout: {
+                                        logoutDialog();
+                                        mDrawerLayout.closeDrawers();
+                                        break;
+                                    }
+
+                                }
+                                return true;
+                            }
+                        });
+            }
         }
     }
     private void signOut() {
@@ -273,6 +332,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }
+
     private void logoutDialog()
     {
 
@@ -294,50 +354,98 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
         });
         builder.create().show();
     }
+    class UpdateToken extends AsyncTask<String,String,String>
+    {
+        HashMap<String,String> param;
+        ProgressDialog progressDialog;
+
+        public UpdateToken(HashMap<String,String> body)
+        {
+            this.param=body;
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                Response response = okHttpClient.newCall(NetworkUtils.createPutRequest(API.UpdateFCMToken+userModel.getId(),this.param)).execute();
+                if (response.isSuccessful()) {
+                    String results = response.body().string();
+                    Log.d("updatetoken", results);
+                    return results;
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return "failed";
+            }
+            return "failed";
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.d(TAG,s);
+            progressDialog.dismiss();
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Đang thao tác");
+            progressDialog.show();
+        }
+
+    }
     private class MyTask extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         @Override
         protected String doInBackground(String... params) {
             Request newsRequest = new Request.Builder()
-                    .url(API.getNews)
+                    .url(API.GetNews)
                     .build();
             Request systemPitchRequest = new Request.Builder()
-                    .url(API.getSystemPitch)
+                    .url(API.GetSystemPitch)
                     .build();
             try {
                 okHttpClient = new OkHttpClient();
-                okhttp3.Response newsResponse = okHttpClient.newCall(newsRequest).execute();
+                Response newsResponse = okHttpClient.newCall(newsRequest).execute();
                 if(newsResponse.isSuccessful()) listNewsData = newsResponse.body().string();
 
-                okhttp3.Response systemPitchResponse = okHttpClient.newCall(systemPitchRequest).execute();
+                Response systemPitchResponse = okHttpClient.newCall(systemPitchRequest).execute();
+                Log.d(TAG,systemPitchResponse.body().toString()+"");
                 if(systemPitchResponse.isSuccessful())
-
                 {
                     listSystemData = systemPitchResponse.body().string();
-
                 }
+            } catch (Exception e) {
 
-            } catch (IOException e) {
                 e.printStackTrace();
+                return "failed";
             }
-            return null;
+            return "success";
         }
 
         @Override
         protected void onPostExecute(String result) {
-            progressDialog.dismiss();
-            tabs = (TabLayout) findViewById(R.id.tabs);
-            viewPager = (ViewPager) findViewById(R.id.viewpager);
-            Adapter adapter = new Adapter(getSupportFragmentManager());
-            adapter.addFragment(new SystemPitchsFragment(listSystemData), "Tìm nhanh");
-            adapter.addFragment(new NewsFragment(listNewsData), "Tin tức");
-            adapter.addFragment(PostNewsFragment.newInstance("",""), "Đăng tin");
-            viewPager.setAdapter(adapter);
-            viewPager.setOffscreenPageLimit(3);
-            tabs.setupWithViewPager(viewPager);
+            if (result.equals(null) || result.contains("failed")) {
+                Utils.openDialog(MainActivity.this,"Đã có lỗi xảy ra, vui lòng thử lại sau");
+            }
+            else {
+                progressDialog.dismiss();
+                tabs = (TabLayout) findViewById(R.id.tabs);
+                viewPager = (ViewPager) findViewById(R.id.viewpager);
+                Adapter adapter = new Adapter(getSupportFragmentManager());
+                adapter.addFragment(new SystemPitchsFragment(listSystemData), "Tìm nhanh");
+                adapter.addFragment(new NewsFragment(listNewsData), "Tin tức");
+                adapter.addFragment(PostNewsFragment.newInstance("", ""), "Đăng tin");
+                viewPager.setAdapter(adapter);
+                viewPager.setOffscreenPageLimit(3);
+                tabs.setupWithViewPager(viewPager);
 //            Log.d(TAG,listSystemData);
 //            mSearchFragment = SearchFragment.newInstance(listSystemData,"");
 //            replaceFragment(mSearchFragment, mSearchFragment.getClass().getName());
+            }
         }
 
         @Override
@@ -385,25 +493,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(grantResults[0]== PackageManager.PERMISSION_GRANTED) {
-            gps = new TrackGPS(MainActivity.this,MainActivity.this);
-
-            if(gps.canGetLocation()){
-                double longitude = gps.getLongitude();
-                double latitude = gps .getLatitude();
-                Log.d(TAG,"lat : " + latitude +" lng :"+longitude);
-                currentLatLng = new LatLng(gps.getLatitude(),gps.getLongitude());
-            }
-            else
-            {
-                Utils.openDialog(MainActivity.this,"Không định vị được vị trí của bạn");
-            }
-        }
-
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.bigpigs.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,38 +13,133 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bigpigs.API;
 import com.bigpigs.R;
-import com.bigpigs.model.Order;
 import com.bigpigs.model.TimeTable;
+import com.bigpigs.model.UserModel;
+import com.bigpigs.support.NetworkUtils;
+import com.bigpigs.support.ShowToast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder> implements View.OnClickListener {
 
     private Context context;
     private String TAG=OrderAdapter.class.getName();
-    private ArrayList<Order> data;
+    private ArrayList<TimeTable> data;
     private LayoutInflater inflater;
     private int callRequest = 1;
+    private UserModel userModel;
 
-
-    public OrderAdapter(Context context, ArrayList<Order> data) {
+    public OrderAdapter(Context context, ArrayList<TimeTable> data,UserModel u) {
         this.context = context;
         this.data = data;
+        this.userModel = u;
         this.inflater = LayoutInflater.from(context);
         setHasStableIds(true);
     }
 
     @Override
     public OrderAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_manage_order, parent, false);
+        View view = inflater.inflate(R.layout.item_order, parent, false);
         MyViewHolder holder = new MyViewHolder(view);
         return holder;
     }
     @Override
-    public void onBindViewHolder(MyViewHolder holder, final int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
+        holder.tv_des.setText(data.get(position).getDescription());
+        holder.tv_time.setText(data.get(position).getStart_time().substring(0,5)+"-"+data.get(position).getEnd_time().substring(0,5));
+
+        if(data.get(position).getType().contains("1"))
+        holder.tv_type.setText("Ngày nghỉ");
+        else holder.tv_type.setText("Ngày thường");
+
+        holder.btCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               if(data.get(position).getPhone()!=null) {
+                   ShowToast.showToastLong(context,data.get(position).getPhone()+" ");
+                   mOnCallEvent.onCallEvent(data.get(position).getPhone());
+               }
+               else mOnCallEvent.onCallEvent("null");
+
+            }
+        });
+        holder.btBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            HashMap<String,String> param = new HashMap<String, String>();
+                param.put("user_id",userModel.getId());
+                param.put("management_id",data.get(position).getId());
+                param.put("pitch_id","1");
+                param.put("status","1");
+                param.put("day",data.get(position).getDay());
+            Log.d(TAG,param.toString());
+            new BookPitch(param,position).execute();
+            }
+
+        });
+
+    }
 
 
+    public class BookPitch extends AsyncTask<String,String,String>
+    {
+        OkHttpClient client;
+        HashMap<String,String> body;
+        private ProgressDialog progressDialog;
+        int position;
+        public BookPitch(HashMap<String, String> body, int position)
+        {
+                this.body = body;
+                this.position = position;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            client = new OkHttpClient();
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setMessage("Đang thao tác");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                Response response =
+                        client.newCall(NetworkUtils.createPostRequest(API.BookPitch,
+                                this.body)).execute();
+                if (response.isSuccessful()) {
+                    String results = response.body().string();
+                    Log.d("run", results);
+                    return results;
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return "failed";
+            }
+            return "failed";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            progressDialog.dismiss();
+            Log.d(TAG,s);
+            data.remove(position);
+            notifyDataSetChanged();
+            notifyItemRemoved(position);
+            notifyItemRangeRemoved(position,data.size());
+        }
     }
     public OnCallEvent mOnCallEvent;
     public void setOnCallEvent(OnCallEvent onCallEvent)
@@ -60,7 +158,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
         return data.size();
     }
 
-    private Order getPitch(int position){
+    private TimeTable getPitch(int position){
 
         return data.get(position);
     }
@@ -84,17 +182,18 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        TextView tv_name;
-        TextView tv_address,tv_time,tv_day,tv_phone,tv_userName;
+        TextView tv_time,tv_des,tv_size,tv_type,tv_price;
         LinearLayout wrapper;
+        Button btBook,btCall;
         public MyViewHolder(View itemView) {
             super(itemView);
-            tv_name = (TextView) itemView.findViewById(R.id.pitch_name);
-            tv_address = (TextView) itemView.findViewById(R.id.order_address);
-            tv_day = (TextView) itemView.findViewById(R.id.order_day);
+            tv_des = (TextView) itemView.findViewById(R.id.pitch_description);
             tv_time = (TextView) itemView.findViewById(R.id.pitch_time);
-            tv_phone = (TextView) itemView.findViewById(R.id.order_phone);
-            tv_phone = (TextView) itemView.findViewById(R.id.order_userName);
+            tv_price = (TextView) itemView.findViewById(R.id.item_price);
+
+            tv_type = (TextView) itemView.findViewById(R.id.item_typeDate);
+            btBook = (Button) itemView.findViewById(R.id.bt_book);
+            btCall = (Button) itemView.findViewById(R.id.bt_call);
 
         }
 

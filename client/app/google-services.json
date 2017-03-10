@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "309810001412",
+    "firebase_url": "https://bigpigs-hkt.firebaseio.com",
+    "project_id": "bigpigs-hkt",
+    "storage_bucket": "bigpigs-hkt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309810001412:android:d79c8d2c330cb186",
+        "android_client_info": {
+          "package_name": "com.bigpigs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "309810001412-72lvpd54uig98pm5a7ioooaterqqnvhv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVHtFk55PSNa63qvp4Z1B9OL-ElzrexmQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

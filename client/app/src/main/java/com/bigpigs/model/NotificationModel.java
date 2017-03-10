@@ -1,7 +1,5 @@
 package com.bigpigs.model;
 
-import java.sql.Date;
-
 public class NotificationModel {
     private String id;
     private String fieldId;
@@ -85,6 +83,4 @@ public class NotificationModel {
     public void setRead(boolean read) {
         isRead = read;
     }
-
-
     }

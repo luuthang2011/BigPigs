@@ -5,11 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.bigpigs.R;
 
 import java.util.ArrayList;
+
 
 public class ManageAdapter extends RecyclerView.Adapter<ManageAdapter.RecyclerViewHolder> {
     public static String TAG="ManageAdapter";
@@ -23,13 +23,12 @@ public class ManageAdapter extends RecyclerView.Adapter<ManageAdapter.RecyclerVi
     @Override
     public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View itemview = inflater.inflate(R.layout.item_manage, parent, false);
+            View itemview = inflater.inflate(R.layout.item_manage_order, parent, false);
             return new RecyclerViewHolder(itemview);
     }
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, final int position) {
-        holder.tv_title.setText(list.get(position).toString());
     }
 
     @Override
@@ -39,11 +38,9 @@ public class ManageAdapter extends RecyclerView.Adapter<ManageAdapter.RecyclerVi
 
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_title;
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
-            tv_title = (TextView) itemView.findViewById(R.id.item_title);
         }
 
     }
