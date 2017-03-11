@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.fimo_pitch.main.PaymentActivity">
+    tools:context="com.bigpigs.main.PaymentActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -102,7 +102,7 @@
             android:layout_marginTop="@dimen/s5dp"
             android:orientation="horizontal"
             android:layout_height="wrap_content">
-            <com.fimo_pitch.custom.view.RoundedImageView
+            <com.bigpigs.custom.view.RoundedImageView
                 android:layout_gravity="center_vertical"
                 android:layout_width="@dimen/s20dp"
                 android:background="@drawable/ic_member"
@@ -126,7 +126,7 @@
             android:layout_marginTop="@dimen/s5dp"
             android:orientation="horizontal"
             android:layout_height="wrap_content">
-            <com.fimo_pitch.custom.view.RoundedImageView
+            <com.bigpigs.custom.view.RoundedImageView
                 android:layout_gravity="center_vertical"
                 android:layout_width="@dimen/s20dp"
                 android:background="@drawable/ic_dollars"

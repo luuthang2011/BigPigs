@@ -25,7 +25,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.bigpigs.custom.view.RoundedImageView
+        <com.bigpigs.view.RoundedImageView
         android:layout_width="@dimen/s70dp"
         android:layout_height="@dimen/s70dp"
         android:layout_alignParentBottom="true"
