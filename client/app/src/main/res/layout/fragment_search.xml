@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/s43dp">
 
-            <com.fimo_pitch.custom.view.RoundedImageView
+            <com.bigpigs.view.RoundedImageView
             android:id="@+id/bt_search"
             android:layout_centerVertical="true"
             android:layout_width="@dimen/s30dp"

@@ -75,7 +75,7 @@
                         android:orientation="horizontal"
                         android:layout_marginTop="5dp"
                         android:layout_height="20dp">
-                        <com.bigpigs.custom.view.RoundedImageView
+                        <com.bigpigs.view.RoundedImageView
                             android:layout_width="10dp"
                             android:background="@drawable/ic_manager"
                             android:layout_gravity="center_vertical"
@@ -96,7 +96,7 @@
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
                         android:layout_height="wrap_content">
-                        <com.bigpigs.custom.view.RoundedImageView
+                        <com.bigpigs.view.RoundedImageView
                             android:layout_width="10dp"
                             android:layout_gravity="center_vertical"
                             android:background="@drawable/ic_clock"
@@ -120,7 +120,7 @@
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
                     android:layout_height="wrap_content">
-                    <com.bigpigs.custom.view.RoundedImageView
+                    <com.bigpigs.view.RoundedImageView
                         android:layout_gravity="center_vertical"
                         android:layout_width="10dp"
                         android:background="@drawable/ic_phone"

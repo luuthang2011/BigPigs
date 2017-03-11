@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/s50dp"
     android:paddingRight="@dimen/s50dp"
-    tools:context="com.fimo_pitch.main.OwnerActivity">
+    tools:context="com.bigpigs.main.FirstActivity">
 
 <LinearLayout
     android:layout_width="match_parent"

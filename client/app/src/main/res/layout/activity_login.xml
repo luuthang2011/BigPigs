@@ -12,7 +12,7 @@
         android:layout_marginTop="@dimen/s100dp"
         >
 
-        <com.bigpigs.custom.view.RoundedImageView
+        <com.bigpigs.view.RoundedImageView
            android:background="@mipmap/ic_launcher"
            android:layout_width="@dimen/s80dp"
            android:layout_height="@dimen/s80dp"

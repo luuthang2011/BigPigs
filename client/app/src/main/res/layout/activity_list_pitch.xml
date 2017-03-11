@@ -51,7 +51,7 @@
         android:text="2017-01-12"
         android:textStyle="bold"
         android:textSize="@dimen/s25sp"/>
-        <com.bigpigs.custom.view.RoundedImageView
+        <com.bigpigs.view.RoundedImageView
             android:id="@+id/btsearch"
             android:layout_width="@dimen/s40dp"
             android:layout_gravity="center_vertical"

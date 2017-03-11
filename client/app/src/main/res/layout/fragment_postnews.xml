@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
-        <com.fimo_pitch.custom.view.RoundedImageView
+        <com.bigpigs.view.RoundedImageView
             android:layout_gravity="center"
             android:layout_width="@dimen/s120dp"
             android:background="@mipmap/ic_launcher"
@@ -35,7 +35,7 @@
                 android:layout_marginLeft="@dimen/s20dp"
                 android:layout_height="wrap_content">
 
-                <com.fimo_pitch.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     android:layout_gravity="center_vertical"
                     android:layout_width="@dimen/s20dp"
                     android:background="@drawable/ic_note"
@@ -55,7 +55,7 @@
                 android:orientation="horizontal"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.03">
-                <com.fimo_pitch.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     android:layout_width="@dimen/s20dp"
                     android:layout_gravity="center_vertical"
                     android:background="@drawable/ic_clock"
@@ -75,7 +75,7 @@
                 android:layout_marginTop="@dimen/s20dp"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content">
-                <com.fimo_pitch.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     android:layout_gravity="center_vertical"
                     android:layout_width="@dimen/s20dp"
                     android:background="@drawable/ic_location"
@@ -95,7 +95,7 @@
                 android:orientation="horizontal"
                 android:layout_height="wrap_content">
 
-                <com.fimo_pitch.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     android:layout_gravity="center_vertical"
                     android:layout_width="@dimen/s20dp"
                     android:background="@drawable/ic_note"
@@ -114,7 +114,7 @@
             android:layout_width="match_parent"
             android:layout_marginTop="50dp"
             android:layout_height="wrap_content">
-            <com.fimo_pitch.custom.view.RoundedImageView
+            <com.bigpigs.view.RoundedImageView
                 android:id="@+id/img_send"
                 android:layout_width="@dimen/s100dp"
                 android:layout_height="@dimen/s100dp"

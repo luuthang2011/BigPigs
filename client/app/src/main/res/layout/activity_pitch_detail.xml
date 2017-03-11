@@ -121,12 +121,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <com.bigpigs.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     android:id="@+id/bt_call"
                     style="@style/item_contact"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/ic_call"
-                    ></com.bigpigs.custom.view.RoundedImageView>
+                    ></com.bigpigs.view.RoundedImageView>
                 <TextView
                     android:id="@+id/tvPhone"
                     android:layout_width="@dimen/s100dp"
@@ -144,7 +144,7 @@
                 android:layout_marginLeft="@dimen/s20dp"
                 android:layout_marginRight="@dimen/s20dp"
                 android:orientation="vertical">
-                <com.bigpigs.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     android:id="@+id/bt_order"
                     style="@style/item_contact"
                     android:layout_gravity="center_horizontal"
@@ -166,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.bigpigs.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     style="@style/item_contact"
                     android:background="@drawable/ic_location"
                     android:layout_gravity="center_horizontal"

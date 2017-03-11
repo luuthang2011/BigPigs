@@ -190,7 +190,7 @@ public class EditPriceActivity extends AppCompatActivity implements View.OnClick
                 TimePickerDialog dialog = new TimePickerDialog(EditPriceActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        edt_startTime.setText(hourOfDay+":"+minute);
+                            edt_startTime.setText(hourOfDay+":"+minute);
                     }
                 },0,0,true);
                 dialog.setTitle("Chọn giờ bắt đầu");

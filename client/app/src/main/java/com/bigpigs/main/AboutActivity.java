@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bigpigs.R;
-import com.bigpigs.model.Pitch;
+
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -17,7 +17,7 @@ public class AboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-
+            
 
     }
 }

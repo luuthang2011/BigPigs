@@ -70,7 +70,7 @@
                         android:orientation="horizontal"
                         android:layout_marginTop="@dimen/s10dp"
                         android:layout_height="@dimen/s40dp">
-                        <com.bigpigs.custom.view.RoundedImageView
+                        <com.bigpigs.view.RoundedImageView
                             android:layout_width="@dimen/s10dp"
                             android:background="@drawable/ic_money"
                             android:layout_gravity="center_vertical"
@@ -91,7 +91,7 @@
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
                         android:layout_height="@dimen/s40dp">
-                        <com.bigpigs.custom.view.RoundedImageView
+                        <com.bigpigs.view.RoundedImageView
                             android:layout_width="@dimen/s10dp"
                             android:layout_gravity="center_vertical"
                             android:background="@drawable/ic_clock"
@@ -114,7 +114,7 @@
                         android:orientation="horizontal"
                         android:padding="@dimen/s5dp"
                         android:layout_height="wrap_content">
-                        <com.bigpigs.custom.view.RoundedImageView
+                        <com.bigpigs.view.RoundedImageView
                             android:layout_width="@dimen/s10dp"
                             android:layout_gravity="center_vertical"
                             android:background="@drawable/ic_clock"

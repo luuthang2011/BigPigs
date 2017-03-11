@@ -90,7 +90,7 @@
         android:layout_marginTop="@dimen/s10dp"
         android:paddingBottom="@dimen/s5dp"
         >
-    <com.fimo_pitch.custom.view.RoundedImageView
+    <com.bigpigs.view.RoundedImageView
         android:id="@+id/item_ownerAvatar"
         android:layout_width="@dimen/s20dp"
         android:layout_height="@dimen/s20dp"

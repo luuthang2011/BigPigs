@@ -39,7 +39,7 @@
                         android:orientation="horizontal"
                         android:layout_marginTop="@dimen/s20dp"
                         android:layout_height="@dimen/s20dp">
-                        <com.bigpigs.custom.view.RoundedImageView
+                        <com.bigpigs.view.RoundedImageView
                             android:layout_width="@dimen/s20dp"
                             android:background="@drawable/ic_ball"
                             android:layout_gravity="center_vertical"
@@ -61,7 +61,7 @@
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
                         android:layout_height="wrap_content">
-                        <com.bigpigs.custom.view.RoundedImageView
+                        <com.bigpigs.view.RoundedImageView
                             android:layout_width="@dimen/s20dp"
                             android:layout_gravity="center_vertical"
                             android:background="@drawable/ic_ball"
@@ -82,7 +82,7 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="@dimen/s20dp"
                     android:layout_height="@dimen/s30dp">
-                    <com.bigpigs.custom.view.RoundedImageView
+                    <com.bigpigs.view.RoundedImageView
                         android:layout_width="@dimen/s20dp"
                         android:background="@drawable/ic_ball"
                         android:layout_gravity="center_vertical"

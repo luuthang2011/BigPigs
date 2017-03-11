@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
 
-    <com.bigpigs.custom.view.RoundedImageView
+    <com.bigpigs.view.RoundedImageView
         android:layout_width="@dimen/s100dp"
         android:layout_height="@dimen/s100dp"
         android:background="@drawable/ic_error"
