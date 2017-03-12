@@ -17,7 +17,7 @@
      android:layout_width="match_parent"
      android:layout_marginTop="@dimen/s5dp"
      android:layout_height="wrap_content">
-    <com.bigpigs.custom.view.RoundedImageView
+    <com.bigpigs.view.RoundedImageView
         android:layout_width="@dimen/s50dp"
         android:background="@drawable/logo_chelsea"
         android:layout_height="@dimen/s50dp"
@@ -74,7 +74,7 @@
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:layout_height="wrap_content">
-            <com.bigpigs.custom.view.RoundedImageView
+            <com.bigpigs.view.RoundedImageView
                 android:layout_width="@dimen/s10dp"
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/ic_clock"
@@ -97,7 +97,7 @@
             android:layout_marginTop="@dimen/s5dp"
             android:orientation="horizontal"
             android:layout_height="wrap_content">
-            <com.bigpigs.custom.view.RoundedImageView
+            <com.bigpigs.view.RoundedImageView
                 android:layout_gravity="center_vertical"
                 android:layout_width="@dimen/s10dp"
                 android:background="@drawable/ic_location"
@@ -122,7 +122,7 @@
                 android:layout_marginTop="@dimen/s5dp"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content">
-                <com.bigpigs.custom.view.RoundedImageView
+                <com.bigpigs.view.RoundedImageView
                     android:layout_gravity="center_vertical"
                     android:layout_width="@dimen/s10dp"
                     android:background="@drawable/ic_note"

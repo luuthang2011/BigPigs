@@ -8,6 +8,10 @@ import android.view.ViewGroup;
 
 import com.bigpigs.R;
 
+
+/**
+ * Created by Diep_Chelsea on 13/07/2016.
+ */
 public class SettingsFragment extends Fragment {
     public static final String TAG = "NewsFragment";
     private static final String ARG_PARAM1 = "param1";

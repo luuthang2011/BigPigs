@@ -13,11 +13,13 @@ import android.widget.TextView;
 import com.bigpigs.CONSTANT;
 import com.bigpigs.R;
 import com.bigpigs.main.EditPitchActivity;
-import com.bigpigs.main.PitchManagementActivity;
 import com.bigpigs.model.Pitch;
 
 import java.util.ArrayList;
 
+/**
+ * Created by TranManhTien on 22/08/2016.
+ */
 public class PitchManagementAdapter extends RecyclerView.Adapter<PitchManagementAdapter.MyViewHolder> implements View.OnClickListener {
 
     private Context context;
@@ -27,13 +29,12 @@ public class PitchManagementAdapter extends RecyclerView.Adapter<PitchManagement
     private int callRequest = 1;
 
 
-    public PitchManagementAdapter(PitchManagementActivity context, ArrayList<Pitch> listPitch) {
+    public PitchManagementAdapter(Context context, ArrayList<Pitch> data) {
         this.context = context;
         this.data = data;
         this.inflater = LayoutInflater.from(context);
         setHasStableIds(true);
     }
-
 
     @Override
     public PitchManagementAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

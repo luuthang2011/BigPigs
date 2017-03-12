@@ -1,7 +1,11 @@
 package com.bigpigs.model;
 
+/**
+ * Created by manht_000 on 30/09/2016.
+ */
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /*
  * Lop Utility
  */

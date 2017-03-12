@@ -39,7 +39,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -51,9 +50,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -79,7 +77,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
     private LatLng resultLatLng;
     private OkHttpClient okHttpClient;
     private ArrayList<DirectionStep> directionSteps;
-    private ArrayList<Polyline> polylines;
+    private List<Polyline> polylines;
     private RoundedImageView bt_search;
     private TextView tv_time;
     private int mHour,mMinute;
@@ -98,6 +96,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             okHttpClient = new OkHttpClient();
             directionSteps = new ArrayList<>();
             polylines = new ArrayList<>();
+
             listSystemPitch = new ArrayList<>();
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>
@@ -106,26 +105,27 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
 
             search_box = (Spinner) view.findViewById(R.id.search_box);
             tv_time    = (TextView) view.findViewById(R.id.tv_time);
-            bt_search  =  (RoundedImageView) view.findViewById(R.id.bt_search);
+//            bt_search  =  (RoundedImageView) view.findViewById(R.id.bt_search);
             bt_currentLocation = (ImageView) view.findViewById(R.id.bt_currentLocation) ;
             bt_clear = (ImageView) view.findViewById(R.id.bt_clear) ;
+            tv_time.setText("07:00");
+
+
 
             bt_clear.setOnClickListener(this);
             bt_currentLocation.setOnClickListener(this);
 
 
             tv_time.setOnClickListener(this);
-            bt_search.setOnClickListener(this);
+//            bt_search.setOnClickListener(this);
 
             search_box.setAdapter(adapter);
             search_box.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if(position==0)
-                    {
-                        resultLatLng = currentLatLng;
-                    }
-                    else
+                    HashMap<String,String> body = new HashMap<String, String>();
+                    body.put("location",search_box.getSelectedItem().toString());
+                    new MyTask(getContext(),body).execute();
                     {
                         Log.d(TAG, search_box.getSelectedItem().toString() + "");
                         String url = "http://maps.google.com/maps/api/geocode/json?address=" + search_box.getSelectedItem().toString() + "&sensor=false";
@@ -168,6 +168,11 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
         @Override
         protected void onPostExecute(String result) {
             progressDialog.dismiss();
+            for(int j=0;j<polylines.size();j++)
+            {
+                polylines.get(j).remove();
+                polylines.remove(j);
+            }
             for (int i=0;i<directionSteps.size();i++)
             {
                 drawLine(i,directionSteps.get(i).getStart(),directionSteps.get(i).getEnd(),"","");
@@ -187,6 +192,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
         }
     }
     public String getDirections(LatLng start, LatLng end, String mode) {
+
         String url = "http://maps.googleapis.com/maps/api/directions/json?"
                 + "origin=" + start.latitude + "," + start.longitude
                 + "&destination=" + end.latitude + "," + end.longitude
@@ -235,24 +241,30 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
     }
     public void reDrawMarker()
     {
+        map.clear();
+        map.addMarker(new MarkerOptions().position(currentLatLng));
         for(int i=0;i<listSystemPitch.size();i++)
         {
             MarkerOptions options = new MarkerOptions();
             Double lat = Double.valueOf(listSystemPitch.get(i).getLat());
             Double lng = Double.valueOf(listSystemPitch.get(i).getLng());
             options.position(new LatLng(lat,lng)).title("Sân bóng 123x");
-            if(listSystemPitch.get(i).getStatus().contains("0")) options.icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_marker_free)));                    Marker marker = map.addMarker(options);
-
+            options.icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_marker_free)));                    Marker marker = map.addMarker(options);
             marker.setTag(i);
+//            map.addMarker(options);
         }
     }
     public void drawLine(int index, LatLng start, LatLng end, String distance, String des)
     {
-        map.addPolyline(new PolylineOptions().add(start,end).color(Color.BLUE).width(8));
-        polylines.add(index,this.map.addPolyline(new PolylineOptions().add(start,end).color(Color.BLUE).width(8)));
+
+        Polyline polyline = map.addPolyline(new PolylineOptions()
+                .add(new LatLng(start.latitude, start.longitude), new LatLng(end.latitude, end.longitude))
+                .width(4)
+                .color(Color.DKGRAY));
+        polylines.add(polyline);
     }
 
-    private class Sendrequest extends AsyncTask<String, Void, String> {
+    private class Sendrequest extends AsyncTask<String, Void, LatLng> {
         ProgressDialog progressDialog;
         public String url;
         public Sendrequest(String url) {
@@ -266,14 +278,19 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             progressDialog.show();
         }
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(LatLng result) {
             progressDialog.dismiss();
-
+            if(result != null)
+                Utils.moveCamera(result,"Khu vực bạn chọn",12,map);
+            else
+            {
+                Utils.openDialog(getContext(),"Đã có lỗi xảy ra. Vui lòng thử lai");
+            }
         }
 
 
         @Override
-        protected String doInBackground(String... params) {
+        protected LatLng doInBackground(String... params) {
             result=" ";
             Request getLatlng = new Request.Builder()
                     .url(this.url)
@@ -297,16 +314,16 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                             double lat = location.getDouble("lat");
                             double lng = location.getDouble("lng");
                             resultLatLng = new LatLng(lat,lng);
-                            return formatted_address;
+                            return resultLatLng;
                         }
                     }
                 }
             } catch (Exception e) {
                 Log.d(TAG,"error");
-
                 e.printStackTrace();
+                return null;
             }
-            return result;
+            return null;
         }
     }
 
@@ -332,27 +349,26 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                 public boolean onMarkerClick(Marker marker) {
                     if(marker.getTag() != null) {
                         int position = (int) marker.getTag();
-                        Log.d("pos",marker.getTag()+"");
                         SystemPitch systemPitch = listSystemPitch.get(position);
                         map.addMarker(new MarkerOptions().title("Bạn ở đây").position(currentLatLng));
-                        map.addMarker(new MarkerOptions().position(marker.getPosition()).title(listSystemPitch.get(0).getName()));
+//                        map.addMarker(new MarkerOptions().position(marker.getPosition()).title(listSystemPitch.get(0).getName()));
                         DetailDialog dialog = new DetailDialog(getContext(), systemPitch,position);
                         dialog.setOnArrivalDeliverListener(SearchFragment.this);
                         dialog.show(getFragmentManager(), TAG);
                         choosePostition = position;
                         chooseLatlng = marker.getPosition();
-
+                        Log.d("choose latlng",chooseLatlng.toString()+" ");
                     }
                      return true;
                 }
             });
-            map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                @Override
-                public void onCameraChange(CameraPosition cameraPosition) {
-                    Random random = new Random();
-                    int x = random.nextInt(6 - 1 + 1) + 1;
-                }
-            });
+//            map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+//                @Override
+//                public void onCameraChange(CameraPosition cameraPosition) {
+//                    Random random = new Random();
+//                    int x = random.nextInt(6 - 1 + 1) + 1;
+//                }
+//            });
         }
     }
     // xu ly thao tac tu dialog
@@ -427,7 +443,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                     SystemPitch systemPitch = new SystemPitch();
                     systemPitch.setDescription(object.getString("description"));
                     systemPitch.setId(object.getString("id"));
-                    systemPitch.setOwnerName("Tiến TM");
+                    systemPitch.setOwnerName(object.getString("user_name"));
                     systemPitch.setOwnerID("user_id");
                     systemPitch.setName(object.getString("name"));
                     systemPitch.setAddress(object.getString("address"));
@@ -436,20 +452,18 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                     systemPitch.setLng(object.getString("log"));
                     systemPitch.setStatus(object.getString("status"));
                     listSystemPitch.add(systemPitch);
-
                     MarkerOptions options = new MarkerOptions();
                     Double lat = Double.valueOf(object.getString("lat"));
                     Double lng = Double.valueOf(object.getString("log"));
                     options.position(new LatLng(lat,lng)).title("Sân bóng 123x");
                     if(systemPitch.getStatus().contains("0"))
                         options.icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_marker_free)));                    Marker marker = map.addMarker(options);
-
                     marker.setTag(i);
                 }
             }
             catch (JSONException e)
             {
-
+                e.printStackTrace();
             }
         }
     }
@@ -466,65 +480,54 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             try {
                 okHttpClient = new OkHttpClient();
                 Response response =
-                        okHttpClient.newCall(NetworkUtils.createPostRequest(API.SearcInDay, this.param)).execute();
+                        okHttpClient.newCall(NetworkUtils.createPostRequest(API.SearchPitch, this.param)).execute();
                 if (response.isSuccessful())
                 {
-                    listSystemData = response.body().string().toString();
-                    JSONObject result = new JSONObject(listSystemData);
-                    Log.d(TAG,listSystemData.toString()) ;
-                    if(result.getString("status").contains("success"))
-                    {
-                        final JSONArray data = result.getJSONArray("data");
-                        if(data.length()>0)
-                        for (int i = 0; i < data.length(); i++) {
-                            JSONObject object = data.getJSONObject(i);
-                            SystemPitch systemPitch = new SystemPitch();
-                            systemPitch.setDescription(object.getString("description"));
-                            systemPitch.setOwnerName("Tiến TM");
-                            systemPitch.setOwnerID("user_id");
-                            systemPitch.setName(object.getString("name"));
-                            systemPitch.setAddress(object.getString("address"));
-                            systemPitch.setId(object.getString("system_id"));
-                            systemPitch.setPhone(object.getString("phone"));
-                            systemPitch.setLat(object.getString("lat"));
-                            systemPitch.setStatus(object.getString("status"));
-                            systemPitch.setLng(object.getString("log"));
-                            listSystemPitch.add(systemPitch);
-                            Log.d(TAG,listSystemPitch.size()+"");
-                        }
-
-                    }
+                    return response.body().string().toString();
 
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return "failed";
+
             }
-            return null;
+            return "failed";
 
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            progressDialog.dismiss();
-            if(listSystemPitch.size()>0)
-
-            for(int i=0;i<listSystemPitch.size();i++)
-            {
-                SystemPitch systemPitch = listSystemPitch.get(i);
-                MarkerOptions options = new MarkerOptions();
-                Double lat = Double.valueOf(systemPitch.getLat());
-                Double lng = Double.valueOf(systemPitch.getLng());
-                options.position(new LatLng(lat,lng)).title(systemPitch.getName());
-                options.icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_marker_free)));
-                Marker marker = map.addMarker(options);
-                marker.setTag(i);
+            listSystemPitch = new ArrayList<>();
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                JSONArray data = jsonObject.getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject object = data.getJSONObject(i);
+                    SystemPitch systemPitch = new SystemPitch();
+                    systemPitch.setDescription(object.getString("description"));
+                    systemPitch.setId(object.getString("id"));
+                    systemPitch.setOwnerName(object.getString("user_name"));
+                    systemPitch.setOwnerID(object.getString("user_id"));
+                    systemPitch.setName(object.getString("name"));
+                    systemPitch.setAddress(object.getString("address"));
+                    systemPitch.setId(object.getString("id"));
+                    systemPitch.setPhone(object.getString("phone"));
+                    systemPitch.setLat(object.getString("lat"));
+                    systemPitch.setLng(object.getString("log"));
+                    listSystemPitch.add(systemPitch);
+                }
+                if(listSystemPitch.size()>0)
+                reDrawMarker();
+                else
+                {
+                    Utils.openDialog(getContext(),"Không có sân bóng khả dụng trong ngày với khu vực lựa chọn. Hãy thử với khu vực khác");
+                }
             }
-            else
+            catch (Exception e)
             {
-                Utils.openDialog(getContext(),"Không có kết quả, hãy thử với điều kiện khác");
+                e.printStackTrace();
             }
-
         }
 
         @Override
@@ -537,18 +540,95 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             progressDialog.show();
         }
     }
-    public String getDayString()
+
+
+    class MyTask extends AsyncTask<String,String,String>
     {
-        String s = Calendar.getInstance().get(Calendar.YEAR)+"-"+Calendar.getInstance().get(Calendar.MONTH)+"-"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-        return s;
+        Context context;
+        HashMap<String,String> param;
+        ProgressDialog progressDialog;
+        OkHttpClient client;
+        public MyTask(Context ct,HashMap<String,String> body)
+        {
+            client = new OkHttpClient();
+            this.context = ct;
+            this.param=body;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setMessage("Đang thao tác");
+            progressDialog.show();
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                Response response =
+                        client.newCall(NetworkUtils.createPostRequest(API.GetSystemByLocation, this.param)).execute();
+                String results = response.body().string();
+                Log.d("run", results);
+                if (response.isSuccessful()) {
+                    return results;
+                }
+
+            }
+            catch (Exception e)
+            {
+                return "failed";
+            }
+            return "failed";
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(!s.contains("failed")) {
+                listSystemPitch = new ArrayList<>();
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    for (int i = 0; i < data.length(); i++) {
+                        JSONObject object = data.getJSONObject(i);
+                        SystemPitch systemPitch = new SystemPitch();
+                        systemPitch.setDescription(object.getString("description"));
+                        systemPitch.setId(object.getString("id"));
+                        systemPitch.setOwnerName("Tiến TM");
+                        systemPitch.setOwnerID(object.getString("user_id"));
+                        systemPitch.setName(object.getString("name"));
+                        systemPitch.setAddress(object.getString("address"));
+                        systemPitch.setId(object.getString("id"));
+                        systemPitch.setPhone(object.getString("phone"));
+                        systemPitch.setLat(object.getString("lat"));
+                        systemPitch.setLng(object.getString("log"));
+                        listSystemPitch.add(systemPitch);
+                    }
+                    reDrawMarker();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            progressDialog.dismiss();
+
+        }
     }
+
     @Override
     public void onClick(View v) {
         int id=v.getId();
         switch (id) {
             case R.id.bt_clear:
             {
+                for(Polyline line : polylines)
+                {
+                    line.remove();
+                }
+                polylines.clear();
                 map.clear();
+
+                Log.d("size",polylines.size()+"");
+
                 reDrawMarker();
                 bt_clear.setVisibility(View.GONE);
             }
@@ -593,20 +673,20 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                 dialog.show();
                 break;
             }
-            case R.id.bt_search :
-            {
-                map.clear();
-                map.addMarker(new MarkerOptions().position(currentLatLng).title("Bạn ở đây"));
-                dateofweek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-                HashMap<String,String> body = new HashMap<>();
-                body.put("time_start",tv_time.getText().toString()+":00");
-                body.put("day", "2017-01-01");
-                body.put("textlocation",search_box.getSelectedItem().toString());
-                new SearchSystemPitch(body);
-                break;
-
-
-            }
+//            case R.id.bt_search :
+//            {
+//                map.clear();
+//                map.addMarker(new MarkerOptions().position(currentLatLng).title("Bạn ở đây"));
+//                dateofweek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+//                HashMap<String,String> body = new HashMap<>();
+//                body.put("time_start",tv_time.getText().toString()+":00");
+//                body.put("day", "2017-01-01");
+//                body.put("textlocation",search_box.getSelectedItem().toString());
+//                new SearchSystemPitch(body);
+//                break;
+//
+//
+//            }
         }
     }
 

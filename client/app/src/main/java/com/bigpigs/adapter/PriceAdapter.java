@@ -16,9 +16,13 @@ import com.bigpigs.CONSTANT;
 import com.bigpigs.R;
 import com.bigpigs.main.EditPriceActivity;
 import com.bigpigs.model.Price;
+import com.bigpigs.support.Utils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+
+/**
+ * Created by TranManhTien on 22/08/2016.
+ */
 public class PriceAdapter extends RecyclerView.Adapter<PriceAdapter.MyViewHolder> implements View.OnClickListener {
 
     private Context context;
@@ -42,14 +46,19 @@ public class PriceAdapter extends RecyclerView.Adapter<PriceAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.tv_des.setText(data.get(position).getDescription());
-        holder.tv_date.setText(data.get(position).getDayOfWeek());
+
+        if(data.get(position).getDayOfWeek().equals("1"))
+        holder.tv_date.setText("Ngày nghỉ");
+        else holder.tv_date.setText("Ngày thường");
+
+
         holder.tv_time.setText(data.get(position).getTime());
         holder.tv_price.setText(data.get(position).getPrice());
         holder.btEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, EditPriceActivity.class);
-                intent.putExtra(CONSTANT.PRICE, (Serializable) data.get(position));
+                intent.putExtra(CONSTANT.PRICE,data.get(position));
                 context.startActivity(intent);
                 ((Activity)context).finish();
 
@@ -58,7 +67,7 @@ public class PriceAdapter extends RecyclerView.Adapter<PriceAdapter.MyViewHolder
         holder.btDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Utils.openDialog(context,"Chức năng hiện chưa khả dụng");
             }
         });
 

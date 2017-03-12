@@ -13,9 +13,12 @@ import com.bigpigs.R;
 import com.bigpigs.main.OrderManagementActivity;
 import com.bigpigs.main.PitchManagementActivity;
 import com.bigpigs.main.PriceManagementActivity;
-import com.bigpigs.main.SystemManagementActivity;
 import com.bigpigs.model.UserModel;
+import com.bigpigs.support.Utils;
 
+/**
+ * Created by Diep_Chelsea on 13/07/2016.
+ */
 public class OwnerFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "NewsFragment";
     private static final String ARG_PARAM1 = "param1";
@@ -64,9 +67,10 @@ public class OwnerFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.bt_manageSystem :
             {
-                Intent intent = new Intent(getActivity(), SystemManagementActivity.class);
-                intent.putExtra(CONSTANT.KEY_USER,userModel);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), SystemManagementActivity.class);
+//                intent.putExtra(CONSTANT.KEY_USER,userModel);
+//                startActivity(intent);
+                Utils.openDialog(getContext(),"Chức năng này chưa khả dụng");
                 break;
             }
             case R.id.bt_managerPrice :

@@ -65,6 +65,9 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle("Quản lý yêu cầu đặt sân");
+        crDay=Calendar.getInstance().get(Calendar.YEAR)+"-"+
+                Calendar.getInstance().get(Calendar.MONTH)+"-"+
+                Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
         initView();
         initList();
 
@@ -73,7 +76,6 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
     @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     public void initList()
@@ -89,8 +91,8 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
         dayFilter = (TextView) findViewById(R.id.date_filter);
         btSearch = (RoundedImageView) findViewById(R.id.btSearch);
         pitchFilter = (Spinner) findViewById(R.id.pitch_filter) ;
-
         dayFilter.setOnClickListener(this);
+        dayFilter.setText(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+"-"+(Calendar.getInstance().get(Calendar.MONTH)+1)+"-"+Calendar.getInstance().get(Calendar.YEAR));
         btSearch.setOnClickListener(this);
     }
     class GetOrders extends AsyncTask<String,String,String>
@@ -134,7 +136,7 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
                         {
                             JSONObject object = data.getJSONObject(i);
                             Order p = new Order();
-                            p.setId(object.getString("id"));
+                            p.setId(object.getString("order_id"));
                             p.setUserName(object.getString("name"));
                             p.setUserPhone(object.getString("phone"));
                             p.setTime_end(object.getString("time_end"));
@@ -145,12 +147,20 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
                             listOrder.add(p);
                         }
                     }
-                    manageOrderAdapter = new ManageOrderAdapter(OrderManagementActivity.this, listOrder);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(OrderManagementActivity.this));
-                    recyclerView.setAdapter(manageOrderAdapter);
-                    LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(OrderManagementActivity.this); // (Context context)
-                    mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-                    recyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+                    if(listOrder.size()>0) {
+                        manageOrderAdapter = new ManageOrderAdapter(OrderManagementActivity.this, listOrder);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(OrderManagementActivity.this));
+                        recyclerView.setAdapter(manageOrderAdapter);
+                        LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(OrderManagementActivity.this); // (Context context)
+                        mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+                        recyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+                        Utils.openDialog(OrderManagementActivity.this,"Có "+listOrder.size()+" kết quả");
+
+                    }
+                    else {
+                        Utils.openDialog(OrderManagementActivity.this,"Không có yêu cầu nào !");
+
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -215,28 +225,47 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
                             listName.add(object.getString("name"));
                         }
                     }
-                    pitchId = listPitch.get(0).getId();
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(OrderManagementActivity.this, android.R.layout.simple_list_item_1, listName);
-                    pitchFilter.setAdapter(adapter);
-                    pitchFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            pitchId = listPitch.get(position).getId();
-                        }
+                    if(listPitch.size()>0) {
+                        pitchId = listPitch.get(0).getId();
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(OrderManagementActivity.this, R.layout.spinner_item2, listName);
+                        pitchFilter.setAdapter(adapter);
+                        pitchFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                pitchId = listPitch.get(position).getId();
+                                HashMap<String, String> body = new HashMap<>();
+                                body.put("day", crDay);
+                                body.put("pitch_id", pitchId);
+                                Log.d(TAG,"spinner  "+ crDay + "-" + pitchId);
 
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
+                                new GetOrders(body).execute();
+                            }
 
-                        }
-                    });
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+//                        pitchId = listPitch.get(0).getId();
+//                        HashMap<String, String> body = new HashMap<>();
+//                        crDay=Calendar.getInstance().get(Calendar.YEAR)+"-"+
+//                                Calendar.getInstance().get(Calendar.MONTH)+"-"+
+//                                Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+//                        body.put("day", crDay);
+//                        body.put("pitch_id", pitchId);
+//                        Log.d(TAG, crDay + "-" + pitchId);
+//                        new GetOrders(body).execute();
+                }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Utils.openDialog(OrderManagementActivity.this,"Đã có lỗi xảy ra, thử lại sau");
+
                 }
 
             }
             else
             {
-                Utils.openDialog(OrderManagementActivity.this,"Failed");
+                Utils.openDialog(OrderManagementActivity.this,"Đã có lỗi xảy ra, thử lại sau");
             }
         }
         @Override
@@ -266,23 +295,24 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-                                    day = year+"-"+monthOfYear+"-"+dayOfMonth;
-                                    dayFilter.setText(day);
-                                    crDay=day;
+
+                                day = year+"-"+(monthOfYear+1)+"-"+dayOfMonth;
+                                dayFilter.setText(dayOfMonth+"-"+(monthOfYear+1)+"-"+year);
+                                crDay=day;
+                                HashMap<String,String> body = new HashMap<>();
+                                body.put("day",crDay);
+                                body.put("pitch_id",pitchId);
+                                Log.d(TAG,crDay+"-"+pitchId);
+                                new GetOrders(body).execute();
                             }
                         },2017, Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                 datePickerDialog.show();
+
 
                 break;
             }
-            case R.id.btSearch:
-            {
-                HashMap<String,String> body = new HashMap<>();
-                body.put("day",crDay);
-                body.put("pitch_id",pitchId);
-                Log.d(TAG,day+"-"+pitchId);
-                new GetOrders(body).execute();
-            }
+
         }
     }
 }

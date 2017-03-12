@@ -41,7 +41,7 @@
                         android:layout_height="@dimen/s20dp">
                         <com.bigpigs.view.RoundedImageView
                             android:layout_width="@dimen/s20dp"
-                            android:background="@drawable/ic_ball"
+                            android:background="@drawable/ic_manager"
                             android:layout_gravity="center_vertical"
                             android:layout_height="@dimen/s20dp"/>
 
@@ -64,7 +64,7 @@
                         <com.bigpigs.view.RoundedImageView
                             android:layout_width="@dimen/s20dp"
                             android:layout_gravity="center_vertical"
-                            android:background="@drawable/ic_ball"
+                            android:background="@drawable/ic_stadium"
                             android:layout_height="@dimen/s20dp"/>
                         <TextView
                             android:layout_width="wrap_content"
@@ -84,12 +84,13 @@
                     android:layout_height="@dimen/s30dp">
                     <com.bigpigs.view.RoundedImageView
                         android:layout_width="@dimen/s20dp"
-                        android:background="@drawable/ic_ball"
+                        android:background="@drawable/ic_note"
                         android:layout_gravity="center_vertical"
                         android:layout_height="@dimen/s20dp"/>
                     <TextView
                         android:id="@+id/pitch_description"
-                        android:layout_width="wrap_content"
+                        android:layout_width="@dimen/s250dp"
+                        android:maxLines="3"
                         android:text="Sân 7 người"
                         android:textSize="@dimen/s20dp"
                         android:layout_marginLeft="@dimen/s20dp"
@@ -99,11 +100,25 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="match_parent">
+        <Button
+            android:id="@+id/btShow"
+            android:layout_width="@dimen/s150dp"
+            android:layout_height="@dimen/s70dp"
+            android:gravity="center"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:text="Xem lịch"
+            />
+        </RelativeLayout>
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/s20dp"
+        android:layout_marginTop="@dimen/s40dp"
         android:layout_marginBottom="@dimen/s5dp"
         android:background="@color/Grey"></View>
 

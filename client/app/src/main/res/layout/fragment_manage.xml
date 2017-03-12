@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fimo_pitch.main.SearchOrderActivity">
+    tools:context="com.bigpigs.main.SearchOrderActivity">
 
     <LinearLayout
         android:layout_marginTop="@dimen/s50dp"
@@ -45,7 +45,7 @@
             android:text="12/12/2016"
             android:textStyle="bold"
             android:textSize="@dimen/s25dp"/>
-        <com.fimo_pitch.custom.view.RoundedImageView
+        <com.bigpigs.view.RoundedImageView
             android:id="@+id/btSearch"
             android:layout_marginLeft="@dimen/s20dp"
             android:layout_width="@dimen/s40dp"

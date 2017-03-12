@@ -16,7 +16,6 @@ import com.bigpigs.API;
 import com.bigpigs.R;
 import com.bigpigs.model.Order;
 import com.bigpigs.support.NetworkUtils;
-import com.bigpigs.support.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,12 +58,8 @@ public class ManageOrderAdapter extends RecyclerView.Adapter<ManageOrderAdapter.
                 okHttpClient = new OkHttpClient();
                 HashMap<String,String> body = new HashMap<String, String>();
                 body.put("id",data.get(position).getId());
-                body.put("user_id",data.get(position).getUserId());
-                body.put("pitch_id",data.get(position).getPitchId());
-                body.put("status","1");
-
-                new UpdateOrder(body,position).execute();
-
+                body.put("status","0");
+                new UpdateOrder(data.get(position).getId(),body,position).execute();
 
             }
         });
@@ -74,15 +69,10 @@ public class ManageOrderAdapter extends RecyclerView.Adapter<ManageOrderAdapter.
                 okHttpClient = new OkHttpClient();
                 HashMap<String,String> body = new HashMap<String, String>();
                 body.put("id",data.get(position).getId());
-                body.put("user_id",data.get(position).getUserId());
-                body.put("pitch_id",data.get(position).getPitchId());
-                body.put("status","2");
-
-                new UpdateOrder(body,position).execute();
-
+                body.put("status","1");
+                new UpdateOrder(data.get(position).getId(),body,position).execute();
             }
         });
-
     }
     public class UpdateOrder extends AsyncTask<String,String,String>
     {
@@ -90,9 +80,10 @@ public class ManageOrderAdapter extends RecyclerView.Adapter<ManageOrderAdapter.
         HashMap<String,String> body;
         private ProgressDialog progressDialog;
         int position;
-
-        public UpdateOrder(HashMap<String,String> body,int position)
+        String id;
+        public UpdateOrder(String id,HashMap<String,String> body,int position)
         {
+            this.id = id;
             this.position = position;
             this.body = body;
         }
@@ -111,7 +102,7 @@ public class ManageOrderAdapter extends RecyclerView.Adapter<ManageOrderAdapter.
         protected String doInBackground(String... params) {
             try {
                 Response response =
-                        client.newCall(NetworkUtils.createPutRequest(API.UpdateOrder,
+                        client.newCall(NetworkUtils.createPutRequest(API.UpdateOrder+"/"+id,
                                 this.body)).execute();
                 if (response.isSuccessful()) {
                     String results = response.body().string();
@@ -149,54 +140,6 @@ public class ManageOrderAdapter extends RecyclerView.Adapter<ManageOrderAdapter.
         return data.get(position);
     }
 
-    private class MyTask extends AsyncTask<String,String,String>
-    {
-        String mUrl;
-        HashMap<String,String> param;
-        private ProgressDialog progressDialog;
-
-        public MyTask(String url,HashMap<String,String> body)
-        {
-            this.param=body;
-            this.mUrl = url;
-        }
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                Response response = okHttpClient.newCall(NetworkUtils.createPostRequest(mUrl,this.param)).execute();
-                if (response.isSuccessful()) {
-                    String results = response.body().string();
-                    Log.d("run", results);
-                    return results;
-                }
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                return "failed";
-            }
-            return "failed";
-        }
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            progressDialog.dismiss();
-            if(s != "failed") {
-
-            }
-            else
-            {
-                Utils.openDialog(context,"Đã có lỗi xảy ra ");
-            }
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage("Đang thao tác");
-            progressDialog.show();
-        }
-    }
 
     @Override
     public int getItemViewType(int position) {

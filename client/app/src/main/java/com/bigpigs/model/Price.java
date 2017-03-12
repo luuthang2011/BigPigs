@@ -1,6 +1,12 @@
 package com.bigpigs.model;
 
-public class Price {
+import java.io.Serializable;
+
+/**
+ * Created by diep1 on 1/8/2017.
+ */
+
+public class Price implements Serializable {
     String time;
     String dayOfWeek;
     String price;

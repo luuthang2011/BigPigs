@@ -2,6 +2,9 @@ package com.bigpigs.model;
 
 import java.io.Serializable;
 
+/**
+ * Created by Diep_Chelsea on 13/07/2016.
+ */
 public class UserModel implements Serializable {
     public static String TYPE_TEAM="TEAM";
     public static String TYPE_OWNER="OWNER";
@@ -98,4 +101,6 @@ public class UserModel implements Serializable {
     public void setUserType(String userType) {
         this.userType = userType;
     }
+
+
 }

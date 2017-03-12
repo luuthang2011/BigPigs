@@ -2,6 +2,9 @@ package com.bigpigs.model;
 
 import java.io.Serializable;
 
+/**
+ * Created by diep1_000 on 9/19/2016.
+ */
 public class Pitch implements Serializable {
     private int image;
     private String name;
@@ -92,6 +95,7 @@ public class Pitch implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
 
 
 

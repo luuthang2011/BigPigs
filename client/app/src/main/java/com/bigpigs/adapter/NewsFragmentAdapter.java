@@ -30,9 +30,9 @@ public class NewsFragmentAdapter extends RecyclerView.Adapter<NewsFragmentAdapte
     @Override
     public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View itemview = inflater.inflate(R.layout.item_news, parent, false);
-            return new RecyclerViewHolder(itemview);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View itemview = inflater.inflate(R.layout.item_news, parent, false);
+        return new RecyclerViewHolder(itemview);
     }
 
     @Override
@@ -91,8 +91,8 @@ public class NewsFragmentAdapter extends RecyclerView.Adapter<NewsFragmentAdapte
         for(int i =0;i<list.size();i++)
         {
             if(list.get(i).getLocation().toLowerCase().contains(constraint) || list.get(i).getTitle().toLowerCase().contains(constraint)
-              ||      list.get(i).getHostName().toLowerCase().contains(constraint) ||list.get(i).getDescription().toLowerCase().contains(constraint) ||
-            list.get(i).getMoney().toLowerCase().contains(constraint) || list.get(i).getTime().toLowerCase().contains(constraint)
+                    ||      list.get(i).getHostName().toLowerCase().contains(constraint) ||list.get(i).getDescription().toLowerCase().contains(constraint) ||
+                    list.get(i).getMoney().toLowerCase().contains(constraint) || list.get(i).getTime().toLowerCase().contains(constraint)
                     )
             {
                 results.add(list.get(i));
@@ -117,6 +117,7 @@ public class NewsFragmentAdapter extends RecyclerView.Adapter<NewsFragmentAdapte
         }
 
     }
+
 
 
 }

@@ -19,7 +19,6 @@ import com.bigpigs.API;
 import com.bigpigs.R;
 import com.bigpigs.support.NetworkUtils;
 import com.bigpigs.support.Utils;
-import com.bigpigs.view.RoundedImageView;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -27,6 +26,8 @@ import java.util.HashMap;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
+/**
+ */
 public class PostNewsFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -35,7 +36,7 @@ public class PostNewsFragment extends Fragment implements View.OnClickListener {
     private EditText edt_time,edt_title,edt_description,edt_location;
     private Button bt_post;
     // 144 xuan thuy : lat : 21.036654, lng 105.781218
-    private RoundedImageView img_send;
+    private Button img_send;
     private OkHttpClient client;
     private String time=" ";
 
@@ -53,12 +54,7 @@ public class PostNewsFragment extends Fragment implements View.OnClickListener {
         edt_time = (EditText) view.findViewById(R.id.edt_time);
         edt_title = (EditText) view.findViewById(R.id.edt_title);
         edt_location = (EditText) view.findViewById(R.id.edt_location);
-        img_send = (RoundedImageView) view.findViewById(R.id.img_send);
-
-        edt_title.setText("Tiêu đề");
-        edt_description.setText("Mô tả");
-        edt_location.setText("Xung quanh Cầu Giấy");
-        edt_time.setText("17h ngày 20-1-2016");
+        img_send = (Button) view.findViewById(R.id.img_send);
 
 
         edt_time.setOnClickListener(this);
@@ -216,7 +212,6 @@ public class PostNewsFragment extends Fragment implements View.OnClickListener {
             {
                 if(validate()) {
                     HashMap<String, String> param = new HashMap<>();
-
                     param.put("time_start", edt_time.getText().toString());
                     param.put("title", edt_title.getText().toString());
                     param.put("address", edt_location.getText().toString());

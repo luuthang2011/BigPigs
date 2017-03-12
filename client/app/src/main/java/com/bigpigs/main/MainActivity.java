@@ -57,10 +57,12 @@ import com.bigpigs.fragments.PostNewsFragment;
 import com.bigpigs.fragments.SearchFragment;
 import com.bigpigs.fragments.SettingsFragment;
 import com.bigpigs.fragments.SystemPitchsFragment;
+import com.bigpigs.fragments.UserOrderManagement;
 import com.bigpigs.model.News;
 import com.bigpigs.model.SystemPitch;
 import com.bigpigs.model.UserModel;
 import com.bigpigs.support.NetworkUtils;
+import com.bigpigs.support.ShowToast;
 import com.bigpigs.support.TrackGPS;
 import com.bigpigs.support.Utils;
 import com.bigpigs.view.RoundedImageView;
@@ -118,12 +120,22 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
         initView();
         getData();
         ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},permissionCode);
-
-        updateToken();
+        fcmToken = FirebaseInstanceId.getInstance().getToken();
+        if(fcmToken != null)
+        updateToken(fcmToken);
         initNavMenu();
         initGoogleAPI();
 
+        Log.d("Startup","Main Acitivty");
         Log.d("TYPE",userModel.getUserType());
+
+        // neu mo ung dung tu thong bao
+        if(getIntent().getBooleanExtra(CONSTANT.FROM_NOTIFICATION,false))
+        {
+            ShowToast.showToastLong(MainActivity.this,"from noticaiton");
+            replaceFragment(NotifcationFragment.newInstance("", ""), NotifcationFragment.class.getName());
+            mDrawerLayout.closeDrawers();
+        }
     }
     private void getData() {
         listSystem = new ArrayList<>();
@@ -172,14 +184,14 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
 
     }
     // update fcm token
-    public void updateToken()
+    public void updateToken(String token)
     {
         fcmToken = FirebaseInstanceId.getInstance().getToken();
         if(fcmToken != null)
         {
             HashMap<String,String> body = new HashMap<>();
             body.put("id",userModel.getId());
-            body.put("tokenfcm",fcmToken);
+            body.put("tokenfcm",token);
             new UpdateToken(body).execute();
         }
     }
@@ -221,7 +233,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                                         break;
                                     }
                                     case R.id.menu_notification: {
-                                        replaceFragment(NotifcationFragment.newInstance("", ""), NotifcationFragment.class.getName());
+                                        Utils.openDialog(MainActivity.this,"Chức năng hiện tại không khả dụng");
                                         mDrawerLayout.closeDrawers();
                                         break;
                                     }
@@ -255,7 +267,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
             }
             else
             {
-                navigationView.getMenu().removeItem(R.id.menu_manage);
                 navigationView.setNavigationItemSelectedListener(
                         new NavigationView.OnNavigationItemSelectedListener() {
                             // This method will trigger on item Click of navigation menu
@@ -274,8 +285,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                                         break;
                                     }
                                     case R.id.menu_notification: {
-                                        replaceFragment(NotifcationFragment.newInstance("", ""), NotifcationFragment.class.getName());
-                                        mDrawerLayout.closeDrawers();
+                                        Utils.openDialog(MainActivity.this,"Chức năng hiện tại không khả dụng");
                                         break;
                                     }
                                     case R.id.menu_search: {
@@ -286,7 +296,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                                         break;
                                     }
                                     case R.id.menu_manage: {
-                                        replaceFragment(new OwnerFragment().newInstance("", ""), OwnerFragment.class.getName());
+                                        replaceFragment(new UserOrderManagement(""), OwnerFragment.class.getName());
                                         mDrawerLayout.closeDrawers();
                                         break;
                                     }
@@ -350,6 +360,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                 signOut();
                 startActivity(new Intent(MainActivity.this,LoginActivity.class));
                 dialog.dismiss();
+                updateToken(" ");
                 }
         });
         builder.create().show();
@@ -417,13 +428,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                 okHttpClient = new OkHttpClient();
                 Response newsResponse = okHttpClient.newCall(newsRequest).execute();
                 if(newsResponse.isSuccessful()) listNewsData = newsResponse.body().string();
-
+                return "success";
             } catch (Exception e) {
 
                 e.printStackTrace();
                 return "failed";
             }
-            return "success";
         }
 
         @Override

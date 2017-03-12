@@ -4,6 +4,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
 
+/**
+ * Created by Diep_Chelsea on 22/08/2016.
+ */
 public class SystemPitch implements Serializable {
     private String id;
     private String name;
