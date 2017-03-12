@@ -1,4 +1,4 @@
-package com.bigpigs.main;
+package com.fimo_pitch.main;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
@@ -201,52 +201,52 @@ public class SearchOrderActivity extends AppCompatActivity implements View.OnCli
             super.onPostExecute(s);
             Log.d(TAG,s);
             if(s != "failed")
-            try {
-                JSONObject result = new JSONObject(s);
-                if (result.getString("status").contains("success")) {
-                    listTime.clear();
-                    JSONArray data = result.getJSONArray("data");
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject object = data.getJSONObject(i);
-                        TimeTable p = new TimeTable();
-                        p.setManagement_id(object.getString("management_it"));
-                        p.setStart_time(object.getString("time_start"));
-                        p.setEnd_time(object.getString("time_end"));
-                        p.setType(object.getString("typedate"));
-                        p.setPitchName(pitchName);
-                        p.setPrice(object.getString("price"));
-                        p.setSystemId(object.getString("system_id"));
-                        p.setPitchId(object.getString("pitch_id"));
-                        p.setDay(crDay);
-                        p.setDescription(object.getString("description"));
-                        listTime.add(p);
+                try {
+                    JSONObject result = new JSONObject(s);
+                    if (result.getString("status").contains("success")) {
+                        listTime.clear();
+                        JSONArray data = result.getJSONArray("data");
+                        for (int i = 0; i < data.length(); i++) {
+                            JSONObject object = data.getJSONObject(i);
+                            TimeTable p = new TimeTable();
+                            p.setManagement_id(object.getString("management_it"));
+                            p.setStart_time(object.getString("time_start"));
+                            p.setEnd_time(object.getString("time_end"));
+                            p.setType(object.getString("typedate"));
+                            p.setPitchName(pitchName);
+                            p.setPrice(object.getString("price"));
+                            p.setSystemId(object.getString("system_id"));
+                            p.setPitchId(object.getString("pitch_id"));
+                            p.setDay(crDay);
+                            p.setDescription(object.getString("description"));
+                            listTime.add(p);
+                        }
+
                     }
+                    recyclerView = (RecyclerView) findViewById(R.id.list_pitch);
+                    LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(SearchOrderActivity.this); // (Context context)
+                    mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+                    recyclerView.setLayoutManager(mLinearLayoutManagerVertical);
+                    adapter = new OrderAdapter(SearchOrderActivity.this, listTime,userModel);
+                    recyclerView.setAdapter(adapter);
+                    if(listTime.size()>0)
+                    {
+                        mText.setVisibility(View.GONE);
+                        Utils.openDialog(SearchOrderActivity.this,"Có "+listTime.size()+" kết quả");
+
+                    }
+                    else
+                    {
+                        mText.setVisibility(View.VISIBLE);
+                        mText.setText("Không có khung giờ trống trong ngày");
+                        Utils.openDialog(SearchOrderActivity.this,"Không có khung giờ trống trong ngày");
+                    }
+                    progressDialog.dismiss();
 
                 }
-                recyclerView = (RecyclerView) findViewById(R.id.list_pitch);
-                LinearLayoutManager mLinearLayoutManagerVertical = new LinearLayoutManager(SearchOrderActivity.this); // (Context context)
-                mLinearLayoutManagerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-                recyclerView.setLayoutManager(mLinearLayoutManagerVertical);
-                adapter = new OrderAdapter(SearchOrderActivity.this, listTime,userModel);
-                recyclerView.setAdapter(adapter);
-                if(listTime.size()>0)
-                {
-                    mText.setVisibility(View.GONE);
-                    Utils.openDialog(SearchOrderActivity.this,"Có "+listTime.size()+" kết quả");
-
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
-                else
-                {
-                    mText.setVisibility(View.VISIBLE);
-                    mText.setText("Không có khung giờ trống trong ngày");
-                    Utils.openDialog(SearchOrderActivity.this,"Không có khung giờ trống trong ngày");
-                }
-                progressDialog.dismiss();
-
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
     }

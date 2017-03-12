@@ -60,7 +60,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
         holder.tv_price.setText(data.get(position).getPrice());
 
         if(data.get(position).getType().contains("1"))
-        holder.tv_type.setText("Ngày nghỉ");
+            holder.tv_type.setText("Ngày nghỉ");
         else holder.tv_type.setText("Ngày thường");
 
         holder.btBook.setOnClickListener(new View.OnClickListener() {
@@ -136,8 +136,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
         int position;
         public BookPitch(HashMap<String, String> body, int position)
         {
-                this.body = body;
-                this.position = position;
+            this.body = body;
+            this.position = position;
         }
 
         @Override
