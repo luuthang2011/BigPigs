@@ -23,8 +23,11 @@ Booking pitch is extremely easy !
 
 
 ### Client
-* Android
-
+* Android : Module
+- Picasso: xử lý ảnh
+- Okhttp3 : tạo http request
+- Paolorotolo:appintro : tạo trang giới thiệu
+- Wingjay:blurimageviewlib : tạo hiệu ứng ảnh...
 
 ## Required Enviroment 
 
