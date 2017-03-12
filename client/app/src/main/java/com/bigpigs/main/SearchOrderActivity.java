@@ -24,17 +24,17 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.bigpigs.API;
-import com.bigpigs.CONSTANT;
-import com.bigpigs.R;
-import com.bigpigs.adapter.OrderAdapter;
-import com.bigpigs.model.Pitch;
-import com.bigpigs.model.SystemPitch;
-import com.bigpigs.model.TimeTable;
-import com.bigpigs.model.UserModel;
-import com.bigpigs.support.NetworkUtils;
-import com.bigpigs.support.Utils;
-import com.bigpigs.view.RoundedImageView;
+import com.fimo_pitch.API;
+import com.fimo_pitch.CONSTANT;
+import com.fimo_pitch.R;
+import com.fimo_pitch.adapter.OrderAdapter;
+import com.fimo_pitch.custom.view.RoundedImageView;
+import com.fimo_pitch.model.Pitch;
+import com.fimo_pitch.model.SystemPitch;
+import com.fimo_pitch.model.TimeTable;
+import com.fimo_pitch.model.UserModel;
+import com.fimo_pitch.support.NetworkUtils;
+import com.fimo_pitch.support.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,6 +80,7 @@ public class SearchOrderActivity extends AppCompatActivity implements View.OnCli
         listPitches = (ArrayList<Pitch>) getIntent().getSerializableExtra(CONSTANT.LISTPITCH);
         userModel = (UserModel) getIntent().getSerializableExtra(CONSTANT.KEY_USER);
         if(listPitches != null && listPitches.size()>0) crPitch = listPitches.get(getIntent().getIntExtra("pos",0));
+
         setContentView(R.layout.activity_list_pitch);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -103,11 +104,6 @@ public class SearchOrderActivity extends AppCompatActivity implements View.OnCli
         tv_dateFilter.setText(Calendar.getInstance().get(Calendar.YEAR)+"-"+(Calendar.getInstance().get(Calendar.MONTH)+1)+"-"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
         if(isWeekend(Calendar.DAY_OF_WEEK)) typeDate="1";
         else typeDate="0";
-        HashMap<String, String> params = new HashMap<>();
-        params.put("pitch_id", crPitch.getId());
-        params.put("day", crDay);
-        params.put("typedate", "1");
-        Log.d(TAG, crDay + "-" + crPitch.getId());
 //        new GetTime(crPitch.getName(), params).execute();
         listTime = new ArrayList<>();
 
@@ -122,6 +118,10 @@ public class SearchOrderActivity extends AppCompatActivity implements View.OnCli
         if(listName.size()>0&&listPitches.size()>0) {
             dataAdapter = new ArrayAdapter<String>(SearchOrderActivity.this,R.layout.spinner_item, listName);
             spinner.setAdapter(dataAdapter);
+            spinner.setSelection(getIntent().getIntExtra("pos",0));
+            Calendar calendar = Calendar.getInstance();
+            crDay =calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DAY_OF_MONTH);
+
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -131,8 +131,7 @@ public class SearchOrderActivity extends AppCompatActivity implements View.OnCli
                     crPitch = listPitches.get(position);
 
                     Calendar calendar = Calendar.getInstance();
-                    tv_dateFilter.setText(calendar.get(Calendar.YEAR)+"/"+(calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.DAY_OF_MONTH));
-                    crDay =calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DAY_OF_MONTH);
+                    tv_dateFilter.setText(calendar.get(Calendar.DAY_OF_MONTH)+"/"+(calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.YEAR));
 
                     Log.d("tag",calendar.get(Calendar.DAY_OF_WEEK)+"");
                     if(isWeekend(calendar.get(Calendar.DAY_OF_WEEK))) typeDate="1";

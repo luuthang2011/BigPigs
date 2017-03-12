@@ -1,18 +1,24 @@
 package com.bigpigs.fragments;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +35,7 @@ import com.bigpigs.CONSTANT;
 import com.bigpigs.R;
 import com.bigpigs.main.DetailActivity;
 import com.bigpigs.model.DirectionStep;
+import com.bigpigs.model.SearchPitchModel;
 import com.bigpigs.model.SystemPitch;
 import com.bigpigs.support.NetworkUtils;
 import com.bigpigs.support.TrackGPS;
@@ -46,10 +53,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,6 +78,8 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
     private ArrayList<LatLng> latLngs;
     private LatLng currentLatLng;
     private ArrayList<SystemPitch> listSystemPitch;
+    private ArrayList<SearchPitchModel> listSearch;
+    private String currentTime="07:00";
     private Spinner search_box;
     private ImageView bt_currentLocation,bt_clear;
     private String result,data;
@@ -88,6 +97,8 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
     private String location="Cầu Giấy";
     private int dateofweek=1;
     private LatLng chooseLatlng;
+    private int callRequest=1111;
+
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         try {
@@ -109,13 +120,8 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             bt_currentLocation = (ImageView) view.findViewById(R.id.bt_currentLocation) ;
             bt_clear = (ImageView) view.findViewById(R.id.bt_clear) ;
             tv_time.setText("07:00");
-
-
-
             bt_clear.setOnClickListener(this);
             bt_currentLocation.setOnClickListener(this);
-
-
             tv_time.setOnClickListener(this);
 //            bt_search.setOnClickListener(this);
 
@@ -123,18 +129,23 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             search_box.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    HashMap<String,String> body = new HashMap<String, String>();
-                    body.put("location",search_box.getSelectedItem().toString());
-                    new MyTask(getContext(),body).execute();
-                    {
-                        Log.d(TAG, search_box.getSelectedItem().toString() + "");
-                        String url = "http://maps.google.com/maps/api/geocode/json?address=" + search_box.getSelectedItem().toString() + "&sensor=false";
-                        if (Utils.isConnected(getContext())) new Sendrequest(url).execute();
-                        else Utils.openDialog(getContext(), getString(R.string.no_connection));
-                        location = search_box.getSelectedItem().toString();
-                    }
-                }
+                    HashMap<String, String> body = new HashMap<String, String>();
+                    body.put("location", search_box.getSelectedItem().toString());
+                    new MyTask(getContext(), body).execute();
+                    Log.d(TAG, search_box.getSelectedItem().toString() + "");
+                    String url = "http://maps.google.com/maps/api/geocode/json?address=" + search_box.getSelectedItem().toString() + "&sensor=false";
+                    if (Utils.isConnected(getContext())) new Sendrequest(url).execute();
+                    else Utils.openDialog(getContext(), getString(R.string.no_connection));
+                    location = search_box.getSelectedItem().toString();
 
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("day", Calendar.getInstance().get(Calendar.YEAR) + "-" +
+                            (Calendar.getInstance().get(Calendar.MONTH) + 1) + "-" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+                    map.put("time_start", currentTime);
+                    map.put("textlocation", search_box.getSelectedItem().toString());
+
+                    new SearchSystemPitch(map).execute();
+                }
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
 
@@ -243,11 +254,11 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
     {
         map.clear();
         map.addMarker(new MarkerOptions().position(currentLatLng));
-        for(int i=0;i<listSystemPitch.size();i++)
+        for(int i=0;i<listSearch.size();i++)
         {
             MarkerOptions options = new MarkerOptions();
-            Double lat = Double.valueOf(listSystemPitch.get(i).getLat());
-            Double lng = Double.valueOf(listSystemPitch.get(i).getLng());
+            Double lat = Double.valueOf(listSearch.get(i).getLat());
+            Double lng = Double.valueOf(listSearch.get(i).getLog());
             options.position(new LatLng(lat,lng)).title("Sân bóng 123x");
             options.icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_marker_free)));                    Marker marker = map.addMarker(options);
             marker.setTag(i);
@@ -349,10 +360,10 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                 public boolean onMarkerClick(Marker marker) {
                     if(marker.getTag() != null) {
                         int position = (int) marker.getTag();
-                        SystemPitch systemPitch = listSystemPitch.get(position);
+                        SearchPitchModel searchPitchModel = listSearch.get(position);
                         map.addMarker(new MarkerOptions().title("Bạn ở đây").position(currentLatLng));
 //                        map.addMarker(new MarkerOptions().position(marker.getPosition()).title(listSystemPitch.get(0).getName()));
-                        DetailDialog dialog = new DetailDialog(getContext(), systemPitch,position);
+                        DetailDialog dialog = new DetailDialog(getContext(), searchPitchModel,position);
                         dialog.setOnArrivalDeliverListener(SearchFragment.this);
                         dialog.show(getFragmentManager(), TAG);
                         choosePostition = position;
@@ -372,27 +383,54 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
         }
     }
     // xu ly thao tac tu dialog
+
+
     @Override
     public void onConfirmed(boolean confirm) {
         // xem chi tiet
         if (confirm) {
             Intent intent = new Intent(getActivity(), DetailActivity.class);
-            intent.putExtra(CONSTANT.SystemPitch_MODEL, listSystemPitch.get(choosePostition));
+            SystemPitch system = new SystemPitch();
+            SearchPitchModel searchPitchModel = listSearch.get(choosePostition);
+            system.setPhone(searchPitchModel.getPhone());
+            system.setOwnerName(searchPitchModel.getUser_name());
+            system.setId(searchPitchModel.getSystem_id());
+            system.setName(searchPitchModel.getSystem_name());
+            system.setAddress(searchPitchModel.getAddress());
+            system.setLng(searchPitchModel.getLog());
+            system.setLat(searchPitchModel.getLat());
+            system.setOwnerID(searchPitchModel.getUser_id());
+            system.setDescription(searchPitchModel.getPitch_description());
+
+            intent.putExtra(CONSTANT.SystemPitch_MODEL,system);
             startActivity(intent);
         }
         // nhan chi duong
         else
         {
-            if(currentLatLng != null) {
-                map.clear();
-                map.addMarker(new MarkerOptions().position(chooseLatlng));
-                map.addMarker(new MarkerOptions().position(currentLatLng));
-                new GetDirections().execute(chooseLatlng, currentLatLng);
-                bt_clear.setVisibility(View.VISIBLE);
-            }
+             ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.CALL_PHONE}, callRequest);
+//            if(currentLatLng != null) {
+//                map.clear();
+//                map.addMarker(new MarkerOptions().position(chooseLatlng));
+//                map.addMarker(new MarkerOptions().position(currentLatLng));
+//                new GetDirections().execute(chooseLatlng, currentLatLng);
+//                bt_clear.setVisibility(View.VISIBLE);
+//            }
         }
     }
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == callRequest)
+            if (grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "01266343244"));
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                startActivity(intent);
+            }
+    }
     public SearchFragment() {}
     public static SearchFragment newInstance(String mdata, String param2) {
         SearchFragment fragment = new SearchFragment();
@@ -432,40 +470,14 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
     }
 
     public void initList() {
-        Log.d(TAG,data);
-        listSystemPitch = new ArrayList<>();
-        if (data.contains("success")) {
-            try {
-                JSONObject jsonObject = new JSONObject(data);
-                JSONArray data = jsonObject.getJSONArray("data");
-                for (int i = 0; i < data.length() - 1; i++) {
-                    JSONObject object = data.getJSONObject(i);
-                    SystemPitch systemPitch = new SystemPitch();
-                    systemPitch.setDescription(object.getString("description"));
-                    systemPitch.setId(object.getString("id"));
-                    systemPitch.setOwnerName(object.getString("user_name"));
-                    systemPitch.setOwnerID("user_id");
-                    systemPitch.setName(object.getString("name"));
-                    systemPitch.setAddress(object.getString("address"));
-                    systemPitch.setId("id");
-                    systemPitch.setLat(object.getString("lat"));
-                    systemPitch.setLng(object.getString("log"));
-                    systemPitch.setStatus(object.getString("status"));
-                    listSystemPitch.add(systemPitch);
-                    MarkerOptions options = new MarkerOptions();
-                    Double lat = Double.valueOf(object.getString("lat"));
-                    Double lng = Double.valueOf(object.getString("log"));
-                    options.position(new LatLng(lat,lng)).title("Sân bóng 123x");
-                    if(systemPitch.getStatus().contains("0"))
-                        options.icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(R.drawable.ic_marker_free)));                    Marker marker = map.addMarker(options);
-                    marker.setTag(i);
-                }
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
+
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("day", Calendar.getInstance().get(Calendar.YEAR) + "-" +
+                (Calendar.getInstance().get(Calendar.MONTH) + 1) + "-" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+        map.put("time_start", "7:00");
+        map.put("textlocation", search_box.getSelectedItem().toString());
+
+        new SearchSystemPitch(map).execute();
     }
     private class SearchSystemPitch extends AsyncTask<String,Void,String> {
         ProgressDialog progressDialog;
@@ -489,35 +501,37 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             } catch (Exception e) {
                 e.printStackTrace();
                 return "failed";
-
             }
             return "failed";
 
         }
-
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            listSystemPitch = new ArrayList<>();
+            Log.d("searchPitch",s);
+            listSearch = new ArrayList<>();
             try {
                 JSONObject jsonObject = new JSONObject(s);
                 JSONArray data = jsonObject.getJSONArray("data");
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject object = data.getJSONObject(i);
-                    SystemPitch systemPitch = new SystemPitch();
-                    systemPitch.setDescription(object.getString("description"));
-                    systemPitch.setId(object.getString("id"));
-                    systemPitch.setOwnerName(object.getString("user_name"));
-                    systemPitch.setOwnerID(object.getString("user_id"));
-                    systemPitch.setName(object.getString("name"));
+                    SearchPitchModel systemPitch = new SearchPitchModel();
+                    systemPitch.setPitch_description(object.getString("description"));
+                    systemPitch.setSystem_id(object.getString("system_id"));
+                    systemPitch.setUser_id("1");
+                    systemPitch.setUser_name("Owner");
+                    systemPitch.setSystem_name(object.getString("name"));
                     systemPitch.setAddress(object.getString("address"));
-                    systemPitch.setId(object.getString("id"));
+                    systemPitch.setPitch_name(object.getString("pitch_name"));
+                    systemPitch.setPitch_id(object.getString("pitch_id"));
                     systemPitch.setPhone(object.getString("phone"));
                     systemPitch.setLat(object.getString("lat"));
-                    systemPitch.setLng(object.getString("log"));
-                    listSystemPitch.add(systemPitch);
+                    systemPitch.setLog(object.getString("log"));
+                    systemPitch.setTime_start(object.getString("time_start"));
+                    systemPitch.setTime_end(object.getString("time_end"));
+                    listSearch.add(systemPitch);
                 }
-                if(listSystemPitch.size()>0)
+                if(listSearch.size()>0)
                 reDrawMarker();
                 else
                 {
@@ -667,6 +681,14 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                         {
                             tv_time.setText(""+mHour+":"+"0"+mMinute);
                         }
+                        currentTime = tv_time.getText().toString();
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        map.put("day", Calendar.getInstance().get(Calendar.YEAR) + "-" +
+                                (Calendar.getInstance().get(Calendar.MONTH) + 1) + "-" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+                        map.put("time_start", currentTime);
+                        map.put("textlocation", search_box.getSelectedItem().toString());
+
+                        new SearchSystemPitch(map).execute();
                     }
                 },7,00,true);
                 dialog.setTitle("Chọn giờ bắt đầu bạn muốn");

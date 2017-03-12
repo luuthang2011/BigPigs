@@ -15,14 +15,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.bigpigs.API;
-import com.bigpigs.CONSTANT;
-import com.bigpigs.R;
-import com.bigpigs.adapter.PriceAdapter;
-import com.bigpigs.model.Pitch;
-import com.bigpigs.model.Price;
-import com.bigpigs.model.UserModel;
-import com.bigpigs.view.RoundedImageView;
+import com.fimo_pitch.API;
+import com.fimo_pitch.CONSTANT;
+import com.fimo_pitch.R;
+import com.fimo_pitch.adapter.PriceAdapter;
+import com.fimo_pitch.custom.view.RoundedImageView;
+import com.fimo_pitch.model.Pitch;
+import com.fimo_pitch.model.Price;
+import com.fimo_pitch.model.UserModel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -123,7 +123,7 @@ public class PriceManagementActivity extends AppCompatActivity {
                             JSONObject object = data.getJSONObject(i);
                             Price p = new Price();
                             p.setId(object.getString("id"));
-                            p.setTime(object.getString("time_start")+"-"+object.getString("time_end"));
+                            p.setTime(object.getString("time_start").substring(0,4)+"-"+object.getString("time_end").substring(0,4));
                             p.setDayOfWeek(object.getString("typedate"));
                             p.setPrice(object.getString("price"));
                             p.setSystemId(object.getString("system_id"));

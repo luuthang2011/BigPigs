@@ -27,6 +27,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
 /**
+ * Created by TranManhTien on 23/08/2016.
  */
 public class PostNewsFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";

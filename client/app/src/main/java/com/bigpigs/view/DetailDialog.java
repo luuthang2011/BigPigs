@@ -10,14 +10,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bigpigs.R;
-import com.bigpigs.model.SystemPitch;
+import com.bigpigs.model.SearchPitchModel;
 
 
+/**
+ * Created by Diep_Chelsea on 09/05/2016.
+ */
 public class DetailDialog extends DialogFragment implements View.OnClickListener {
     int pos;
     Context mContext;
-    SystemPitch mSystemPitch;
-    public DetailDialog(Context context, SystemPitch systemPitch,int x) {
+    SearchPitchModel mSystemPitch;
+    public DetailDialog(Context context, SearchPitchModel systemPitch, int x) {
         this.pos = x;
         this.mContext = context;
         this.mSystemPitch = systemPitch;
@@ -34,11 +37,12 @@ public class DetailDialog extends DialogFragment implements View.OnClickListener
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_detail, null);
         TextView name = (TextView) view.findViewById(R.id.id_sName);
         TextView address = (TextView) view.findViewById(R.id.id_address);
-        TextView des = (TextView) view.findViewById(R.id.id_des);
-
-        name.setText(mSystemPitch.getName());
+        TextView pName = (TextView) view.findViewById(R.id.id_pName);
+        TextView time = (TextView) view.findViewById(R.id.tv_phone);
+        time.setText("Thời gian còn rảnh : "+mSystemPitch.getTime_start()+"-"+mSystemPitch.getTime_end());
+        name.setText(mSystemPitch.getSystem_name());
         address.setText(mSystemPitch.getAddress());
-        des.setText(mSystemPitch.getDescription());
+        pName.setText(mSystemPitch.getPitch_name());
 
         view.findViewById(R.id.id_dialog_ok).setOnClickListener(this);
         view.findViewById(R.id.id_more).setOnClickListener(this);

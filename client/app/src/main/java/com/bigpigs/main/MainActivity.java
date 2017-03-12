@@ -233,7 +233,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                                         break;
                                     }
                                     case R.id.menu_notification: {
-                                        Utils.openDialog(MainActivity.this,"Chức năng hiện tại không khả dụng");
+                                        replaceFragment(NotifcationFragment.newInstance("", ""), NotifcationFragment.class.getName());
                                         mDrawerLayout.closeDrawers();
                                         break;
                                     }

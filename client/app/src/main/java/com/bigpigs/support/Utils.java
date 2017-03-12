@@ -1,7 +1,6 @@
 package com.bigpigs.support;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -18,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.bigpigs.R;
 import com.bigpigs.main.FirstActivity;
+import com.bigpigs.view.MyCustomDialog;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,19 +27,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 public class Utils {
-        public static void openDialog(Context context, String content)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage(content);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                }
-            });
-            builder.create().show();
+    public static void openDialog(Context context, String content)
+    {
+        MyCustomDialog dialog = new MyCustomDialog(context,content);
+        dialog.show();
+    }
 
-        }
     public static void makeNotification(Context context,Activity activity,String content)
     {
         NotificationCompat.Builder mBuilder =
@@ -109,15 +102,7 @@ public class Utils {
         return isConnected;
     }
 
-        public static  void showDialog(Context context,String content,DialogInterface.OnClickListener yesClick,
-                                       DialogInterface.OnClickListener cancelClick)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage(content);
-            builder.setPositiveButton(context.getString(R.string.ok),yesClick);
-            builder.setNegativeButton(context.getString(R.string.cancel),cancelClick);
-            builder.create().show();
-        }
+
     public static  void showGpsSettingsAlert(final  Context context, DialogInterface.OnClickListener clickListener){
         android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(context);
 
@@ -137,10 +122,6 @@ public class Utils {
         // Showing Alert Message
         alertDialog.show();
     }
-    public static void getCurrentLocation(GoogleMap map, TrackGPS gps, Context context, String tag)
-    {
-
-    }
 
     public static void showInternetSettingsAlert(final Context context){
         android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(context);
@@ -159,12 +140,12 @@ public class Utils {
         });
         alertDialog.show();
     }
-    public static void moveCamera(LatLng latLng, String title, int zoom, GoogleMap map) {
+    public static void moveCamera(LatLng latLng, String title,int zoom, GoogleMap map) {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom  );
         map.addMarker(new MarkerOptions().position(latLng).title(title)).showInfoWindow();
         map.animateCamera(cameraUpdate);
     }
-    public static void showCircle(LatLng latLng, double radius, GoogleMap map)
+    public static void showCircle(LatLng latLng, double radius,GoogleMap map)
     {
         map.clear();
         CircleOptions circleOptions = new CircleOptions();

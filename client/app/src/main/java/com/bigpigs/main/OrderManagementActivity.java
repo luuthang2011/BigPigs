@@ -54,7 +54,7 @@ public class OrderManagementActivity extends AppCompatActivity implements View.O
     private String pitchId,day;
     private String TAG=OrderManagementActivity.class.getName();
     private String crDay=Calendar.getInstance().get(Calendar.YEAR)+"-"+
-                         Calendar.getInstance().get(Calendar.MONTH)+"-"+
+            (Calendar.getInstance().get(Calendar.MONTH)+1)+"-"+
                          Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
