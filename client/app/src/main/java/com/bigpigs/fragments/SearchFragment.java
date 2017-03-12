@@ -510,6 +510,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
             super.onPostExecute(s);
             Log.d("searchPitch",s);
             listSearch = new ArrayList<>();
+            progressDialog.dismiss();
             try {
                 JSONObject jsonObject = new JSONObject(s);
                 JSONArray data = jsonObject.getJSONArray("data");
@@ -532,7 +533,9 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, View
                     listSearch.add(systemPitch);
                 }
                 if(listSearch.size()>0)
+
                 reDrawMarker();
+
                 else
                 {
                     Utils.openDialog(getContext(),"Không có sân bóng khả dụng trong ngày với khu vực lựa chọn. Hãy thử với khu vực khác");
