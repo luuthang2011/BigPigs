@@ -1,4 +1,4 @@
-package com.fimo_pitch.main;
+package com.bigpigs.main;
 
 import android.Manifest;
 import android.app.DatePickerDialog;

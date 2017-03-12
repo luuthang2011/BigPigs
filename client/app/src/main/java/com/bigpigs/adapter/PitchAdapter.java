@@ -62,7 +62,7 @@ public class PitchAdapter extends RecyclerView.Adapter<PitchAdapter.MyViewHolder
         holder.btShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context,SearchOrderActivity.class);
+                Intent intent = new Intent(context, SearchOrderActivity.class);
                 intent.putExtra(CONSTANT.LISTPITCH_DATA, (Serializable) listName);
                 intent.putExtra(CONSTANT.LISTPITCH,  (Serializable) data);
                 intent.putExtra(CONSTANT.SystemPitch_MODEL,systemPitch);
