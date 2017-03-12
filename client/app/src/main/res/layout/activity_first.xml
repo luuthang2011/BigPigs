@@ -4,7 +4,7 @@
     android:id="@+id/activity_first"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fimo_pitch.main.FirstActivity">
+    tools:context="com.bigpigs.main.FirstActivity">
 
     <ImageView
         android:id="@+id/ic_laucher"

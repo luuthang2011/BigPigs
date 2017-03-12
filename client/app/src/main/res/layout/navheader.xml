@@ -44,7 +44,7 @@
         />
 
     <com.bigpigs.view.RoundedImageView
-        android:id="@+id/"
+        android:id="@+id/user_avatar"
         android:layout_width="@dimen/s60dp"
         android:layout_height="@dimen/s60dp"
         android:background="@drawable/ic_avatar"
