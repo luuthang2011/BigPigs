@@ -18,6 +18,19 @@ Node.js: http://nodejs.org/
 PostgreSQL: https://www.postgresql.org/
 
 
+Server : Module 
+- [Bluebird] 
+- [Fcm-node]
+- [Jsonwebtoken]
+- [Pg-promise]
+
+
 ## License
 
   [MIT](LICENSE)
+
+
+[Bluebird]: <https://www.npmjs.com/package/bluebird>
+[Fcm-Node]: <https://www.npmjs.com/package/fcm-node>
+[Jsonwebtoken]: <https://tools.ietf.org/html/rfc7519>
+[Pg-promise]: <https://www.npmjs.com/package/pg-promise>
