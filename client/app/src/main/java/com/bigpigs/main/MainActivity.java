@@ -122,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
         ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},permissionCode);
         fcmToken = FirebaseInstanceId.getInstance().getToken();
         if(fcmToken != null)
-        updateToken(fcmToken);
+            updateToken(fcmToken);
         initNavMenu();
         initGoogleAPI();
 
@@ -195,7 +195,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
             new UpdateToken(body).execute();
         }
     }
-    public void replaceFragment(Fragment fragment, String tag)
+    public void replaceFragment(Fragment fragment,String tag)
     {
 
         tabs.setVisibility(View.GONE);
@@ -233,8 +233,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                                         break;
                                     }
                                     case R.id.menu_notification: {
-                                        replaceFragment(NotifcationFragment.newInstance("", ""), NotifcationFragment.class.getName());
-                                        mDrawerLayout.closeDrawers();
+                                        Utils.openDialog(MainActivity.this,"Chức năng hiện tại không khả dụng");
+
                                         break;
                                     }
                                     case R.id.menu_search: {
@@ -361,7 +361,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                 startActivity(new Intent(MainActivity.this,LoginActivity.class));
                 dialog.dismiss();
                 updateToken(" ");
-                }
+            }
         });
         builder.create().show();
     }
@@ -426,7 +426,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.O
                     .build();
             try {
                 okHttpClient = new OkHttpClient();
-                Response newsResponse = okHttpClient.newCall(newsRequest).execute();
+                okhttp3.Response newsResponse = okHttpClient.newCall(newsRequest).execute();
                 if(newsResponse.isSuccessful()) listNewsData = newsResponse.body().string();
                 return "success";
             } catch (Exception e) {

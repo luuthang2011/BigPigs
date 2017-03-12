@@ -9,19 +9,20 @@
         android:id="@+id/id_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/s20dp"
+        android:padding="@dimen/s20dp"
         android:gravity="center"
-        android:maxLines="2"
+        android:maxLines="5"
         android:textStyle="bold"
         android:text="@string/choose_diff"
-        android:textColor="@color/colorBlack"
-        android:textSize="@dimen/s30dp" />
+        android:textSize="@dimen/s20dp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/s1dp" />
 
     <LinearLayout
+        android:background="@color/com_facebook_blue"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -30,10 +31,11 @@
             android:layout_width="@dimen/s0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/Grey"
             android:text="OK"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@color/com_facebook_blue"
             android:textAllCaps="false"
-            android:textColor="@color/blueGray"
             android:textSize="@dimen/s20dp" />
 
         <View
