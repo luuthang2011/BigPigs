@@ -15,10 +15,25 @@ Booking pitch is extremely easy !
 ----
 ## Technology
 ### Server
-* NodeJS
+* NodeJS : Module 
+- [Bluebird] 
+- [Fcm-node]
+- [Jsonwebtoken]
+- [Pg-promise]
+
 
 ### Client
 * Android
 
 
 ## Required Enviroment 
+
+## License
+
+  [MIT](LICENSE)
+
+
+[Bluebird]: <https://www.npmjs.com/package/bluebird>
+[Fcm-Node]: <https://www.npmjs.com/package/fcm-node>
+[Jsonwebtoken]: <https://tools.ietf.org/html/rfc7519>
+[Pg-promise]: <https://www.npmjs.com/package/pg-promise>
