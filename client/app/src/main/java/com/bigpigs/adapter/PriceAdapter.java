@@ -12,11 +12,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.fimo_pitch.CONSTANT;
-import com.fimo_pitch.R;
-import com.fimo_pitch.main.EditPriceActivity;
-import com.fimo_pitch.model.Price;
-import com.fimo_pitch.support.Utils;
+import com.bigpigs.CONSTANT;
+import com.bigpigs.R;
+import com.bigpigs.main.EditPriceActivity;
+import com.bigpigs.model.Price;
+import com.bigpigs.support.Utils;
 
 import java.util.ArrayList;
 

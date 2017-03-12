@@ -15,14 +15,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.fimo_pitch.API;
-import com.fimo_pitch.CONSTANT;
-import com.fimo_pitch.R;
-import com.fimo_pitch.adapter.PriceAdapter;
-import com.fimo_pitch.custom.view.RoundedImageView;
-import com.fimo_pitch.model.Pitch;
-import com.fimo_pitch.model.Price;
-import com.fimo_pitch.model.UserModel;
+import com.bigpigs.API;
+import com.bigpigs.CONSTANT;
+import com.bigpigs.R;
+import com.bigpigs.adapter.PriceAdapter;
+import com.bigpigs.model.Pitch;
+import com.bigpigs.model.Price;
+import com.bigpigs.model.UserModel;
+import com.bigpigs.view.RoundedImageView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
